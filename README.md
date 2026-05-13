@@ -66,8 +66,6 @@ Desarrollar una plataforma web moderna, intuitiva y segura para facilitar la com
 
 ## 🛠️ Tecnologías 
 
-> Puedes editar esta sección dependiendo de las tecnologías que utilices.
-
 - HTML
 - PYTHON
 
