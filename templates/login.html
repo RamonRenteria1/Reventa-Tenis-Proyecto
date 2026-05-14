@@ -1,61 +1,62 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
 
-<div class="row justify-content-center">
+<div class="row justify-content-center mt-5">
 
     <div class="col-md-5">
 
-        <div class="card shadow">
-
-            <div class="card-header bg-primary text-white text-center">
-                <h3 class="mb-0">Iniciar Sesión</h3>
-            </div>
+        <div class="card shadow-lg p-4 border-0 border-top border-dark border-4">
 
             <div class="card-body">
 
-                <form method="POST" action="/inicio">
+                <h3 class="text-center fw-bold text-dark mb-4">
+                    Iniciar Sesión
+                </h3>
+
+                <form method="POST">
 
                     <div class="mb-3">
-                        <label class="form-label">Correo electrónico</label>
+                        <label class="form-label small fw-bold text-muted">
+                            Correo Electrónico
+                        </label>
 
-                        <input type="email"
-                            name="email"
-                            class="form-control"
-                            placeholder="usuario@ejemplo.com"
-                            required>
+                        <input type="email" name="email" class="form-control border-secondary-subtle"
+                            placeholder="nombre@correo.com" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Contraseña</label>
+                        <label class="form-label small fw-bold text-muted">
+                            Contraseña
+                        </label>
 
-                        <input type="password"
-                            name="password"
-                            class="form-control"
-                            required>
+                        <input type="password" name="password" class="form-control border-secondary-subtle"
+                            placeholder="••••••••" required>
                     </div>
 
-                    <button type="submit"
-                            class="btn btn-primary w-100">
+                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold py-2">
 
-                        Ingresar
+                        Entrar
+
                     </button>
 
                 </form>
 
-                <div class="text-center mt-3">
-                    <a href="/recuperar">¿Olvidaste tu contraseña?</a>
-                </div>
+                <p class="text-center mt-3 small">
+                    ¿No tienes cuenta?
 
-                <hr>
+                    <a href="{{ url_for('registro') }}" class="text-info fw-bold text-decoration-none">
+                        Regístrate aquí
+                    </a>
+                </p>
 
-                <div class="text-center">
-                    <p>¿No tienes cuenta?
-                        <a href="/registro">Registrarse</a>
-                    </p>
-                </div>
+                <p class="text-center small">
+                    <a href="{{ url_for('recuperar') }}" class="text-muted text-decoration-none">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </p>
 
             </div>
 

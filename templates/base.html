@@ -1,42 +1,204 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}SHOES STORE{% endblock %}</title>
+    <title>{% block title %}Shoes Store{% endblock %}</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f4f6f8;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #111111, #2c2c2c);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            color: #e5e5e5 !important;
+        }
+
+        .nav-link:hover {
+            color: #20c997 !important;
+        }
+
+        main {
+            min-height: 80vh;
+        }
+
+        .alert {
+            border-radius: 12px;
+        }
+
+        footer {
+            background: #111111;
+            color: white;
+        }
+    </style>
+
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+
         <div class="container">
-            <a class="navbar-brand" href="/">Shoes Store</a>
+
+            <a class="navbar-brand fw-bold" href="{{ url_for('tienda_T') }}">
+
+                SHOES STORE
+
+            </a>
+
+
+
+            {% if session.get('usuario_id') %}
+
+            <form class="d-flex mx-auto w-50" method="GET" action="{{ url_for('tienda_T') }}">
+
+                <input class="form-control rounded-start-pill border-0" type="search" name="buscar"
+                    placeholder="Buscar tenis...">
+
+                <button class="btn btn-info rounded-end-pill px-4" type="submit">
+
+                    Buscar
+
+                </button>
+
+            </form>
+
+            {% endif %}
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <div class="collapse navbar-collapse" id="menu">
+
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                    {% if session.get('usuario_id') %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('tienda_T') }}">
+                            Inicio
+                        </a>
+                    </li>
+
+                    {% if session.get('tipo') == 'vendedor' %}
+
+                    <li class="nav-item">
+
+                        <a class="nav-link" href="{{ url_for('agregar_producto') }}">
+
+                            Agregar Producto
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+                    <li class="nav-item">
+
+                        <span class="nav-link text-success fw-bold">
+
+                            {{ session.get('nombre') }}
+
+                        </span>
+
+                    </li>
+
+                    <li class="nav-item ms-lg-2">
+
+                        <a class="btn btn-outline-light rounded-pill px-3" href="{{ url_for('logout') }}">
+
+                            Salir
+
+                        </a>
+
+                    </li>
+
+                    {% else %}
+
+                    <li class="nav-item">
+
+                        <a class="nav-link" href="{{ url_for('login') }}">
+
+                            Iniciar Sesión
+
+                        </a>
+
+                    </li>
+
+                    <li class="nav-item ms-lg-2">
+
+                        <a class="btn btn-info rounded-pill px-3" href="{{ url_for('registro') }}">
+
+                            Registrarse
+
+                        </a>
+
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </div>
+
         </div>
+
     </nav>
 
     <main class="container mt-4">
 
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
 
-                    <div class="alert alert-info alert-dismissible fade show">
-                        {{ message }}
+        {% if messages %}
 
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
+        {% for categoria, message in messages %}
 
-                {% endfor %}
-            {% endif %}
+        <div class="alert alert-{{ categoria }} alert-dismissible fade show shadow-sm">
+
+            {{ message }}
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
+            </button>
+
+        </div>
+
+        {% endfor %}
+
+        {% endif %}
+
         {% endwith %}
 
         {% block content %}{% endblock %}
 
     </main>
 
+    <footer class="text-center py-3 mt-5">
+
+        <small>
+            SHOES STORE © 2026 | Compra y venta de tenis
+        </small>
+
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>

@@ -1,81 +1,114 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Registrarse{% endblock %}
+{% block title %}Registro{% endblock %}
 
 {% block content %}
 
-<div class="row justify-content-center">
+<div class="row justify-content-center mt-5">
 
     <div class="col-md-6">
 
-        <div class="card shadow">
-
-            <div class="card-header bg-success text-white text-center">
-                <h3 class="mb-0">Crear Cuenta</h3>
-            </div>
+        <div class="card shadow-lg p-4 border-0 border-top border-info border-4">
 
             <div class="card-body">
 
-                <form method="POST" action="/registro">
+                <h3 class="text-center fw-bold text-dark mb-4">
+                    Crear Cuenta
+                </h3>
+
+                <form method="POST">
+
+                    <div class="mb-3">
+
+                        <label class="form-label small fw-bold text-muted">
+                            Nombre Completo
+                        </label>
+
+                        <input type="text" name="nombre" class="form-control border-secondary-subtle"
+                            placeholder="Ej. Ramón Rentería" required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label small fw-bold text-muted">
+                            Correo Electrónico
+                        </label>
+
+                        <input type="email" name="email" class="form-control border-secondary-subtle"
+                            placeholder="nombre@correo.com" required>
+
+                    </div>
 
                     <div class="row">
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Nombre</label>
 
-                            <input type="text"
-                                name="first_name"
-                                class="form-control"
-                                placeholder="Juan"
-                                required>
+                            <label class="form-label small fw-bold text-muted">
+                                Contraseña
+                            </label>
+
+                            <input type="password" name="password" class="form-control border-secondary-subtle"
+                                placeholder="••••••••" required>
+
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Apellido</label>
 
-                            <input type="text"
-                                name="last_name"
-                                class="form-control"
-                                placeholder="Treviño"
-                                required>
+                            <label class="form-label small fw-bold text-muted">
+                                Tipo de Cuenta
+                            </label>
+
+                            <select name="tipo" class="form-select border-secondary-subtle" required>
+
+                                <option value="">
+                                    Selecciona una opción
+                                </option>
+
+                                <option value="comprador">
+                                    Comprador
+                                </option>
+
+                                <option value="vendedor">
+                                    Vendedor
+                                </option>
+
+                            </select>
+
                         </div>
 
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Correo electrónico</label>
+                    <div class="mb-4">
 
-                        <input type="email"
-                            name="email"
-                            class="form-control"
-                            placeholder="usuario@gmail.com"
-                            required>
+                        <label class="form-label small fw-bold text-muted">
+                            Confirmar Contraseña
+                        </label>
+
+                        <input type="password" name="confirmar_password" class="form-control border-secondary-subtle"
+                            placeholder="••••••••" required>
+
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Contraseña</label>
+                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold py-2 border-info">
 
-                        <input type="password"
-                            name="password"
-                            class="form-control"
-                            required>
-                    </div>
+                        Registrarme
 
-                    <button type="submit"
-                            class="btn btn-success w-100">
-
-                        Registrarse
                     </button>
 
                 </form>
 
-                <hr>
+                <p class="text-center mt-3 small">
 
-                <div class="text-center">
-                    <p>¿Ya tienes cuenta?
-                        <a href="/inicio">Iniciar Sesión</a>
-                    </p>
-                </div>
+                    ¿Ya tienes cuenta?
+
+                    <a href="{{ url_for('login') }}" class="text-info fw-bold text-decoration-none">
+
+                        Inicia sesión aquí
+
+                    </a>
+
+                </p>
 
             </div>
 

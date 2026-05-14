@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Recuperar Contraseña{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-5">
+
+    <div class="col-md-5">
+
+        <div class="card shadow-lg p-4 border-0 border-top border-info border-4">
+
+            <div class="card-body">
+
+                <h3 class="text-center fw-bold text-dark mb-3">
+                    Recuperar Contraseña
+                </h3>
+
+                <p class="text-center text-muted mb-4">
+                    Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+                </p>
+
+                <form method="POST">
+
+                    <div class="mb-4">
+
+                        <label class="form-label small fw-bold text-muted">
+                            Correo Electrónico
+                        </label>
+
+                        <input type="email" name="email" class="form-control border-secondary-subtle"
+                            placeholder="nombre@correo.com" required>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold py-2">
+
+                        Enviar Enlace
+
+                    </button>
+
+                </form>
+
+                <p class="text-center mt-4 small">
+
+                    ¿Recordaste tu contraseña?
+
+                    <a href="{{ url_for('login') }}" class="text-info fw-bold text-decoration-none">
+
+                        Inicia sesión
+
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
