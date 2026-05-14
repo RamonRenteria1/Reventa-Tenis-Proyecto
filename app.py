@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from tiendatenis import TiendaTenis
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = "clave"
@@ -41,18 +42,20 @@ def registro():
 
         nombre = request.form["nombre"]
         email = request.form["email"]
-        password = request.form["password"]
-        confirmar_password = request.form["confirmar_password"]
-        tipo = request.form["tipo"]
 
-        if password != confirmar_password:
+        password_original = request.form["password"]
+        confirmar_password = request.form["confirmar_password"]
+
+        if password_original != confirmar_password:
             flash("Las contraseñas no coinciden", "danger")
             return redirect(url_for("registro"))
+
+        tipo = request.form["tipo"]
 
         usuario_id = tienda.crear_usuario(
             nombre,
             email,
-            password,
+            password_original,  
             tipo
         )
 

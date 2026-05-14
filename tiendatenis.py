@@ -4,6 +4,11 @@ from bson.objectid import ObjectId
 from datetime import datetime
 from typing import Optional, List, Dict
 
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
+
 
 class TiendaTenis:
 
@@ -35,14 +40,12 @@ class TiendaTenis:
 
     def _crear_indices(self):
 
-        self.usuarios.create_index(
-            "email",
-            unique=True
-        )
-
+        self.usuarios.create_index("email", unique=True)
         self.productos.create_index("marca")
         self.productos.create_index("tipo")
         self.productos.create_index("talla")
+
+
 
     def crear_usuario(
         self,
@@ -53,10 +56,13 @@ class TiendaTenis:
     ) -> Optional[str]:
 
         try:
+
+            password_encriptada = generate_password_hash(password)
+
             resultado = self.usuarios.insert_one({
                 "nombre": nombre,
                 "email": email,
-                "password": password,
+                "password": password_encriptada,
                 "tipo": tipo,
                 "fecha_registro": datetime.now(),
                 "activo": True
@@ -68,6 +74,10 @@ class TiendaTenis:
             print("El correo ya está registrado")
             return None
 
+        except Exception as e:
+            print(e)
+            return None
+
     def iniciar_sesion(
         self,
         email: str,
@@ -75,14 +85,15 @@ class TiendaTenis:
     ) -> Optional[Dict]:
 
         try:
-            usuario = self.usuarios.find_one({
-                "email": email
-            })
 
-            if usuario and usuario["password"] == password:
+            usuario = self.usuarios.find_one({"email": email})
+
+            if not usuario:
+                return None
+
+            if check_password_hash(usuario["password"], password):
 
                 usuario["_id"] = str(usuario["_id"])
-
                 return usuario
 
             return None
@@ -97,6 +108,7 @@ class TiendaTenis:
     ) -> Optional[Dict]:
 
         try:
+
             usuario = self.usuarios.find_one({
                 "_id": ObjectId(usuario_id)
             })
@@ -109,6 +121,8 @@ class TiendaTenis:
         except Exception as e:
             print(e)
             return None
+
+    
 
     def agregar_producto(
         self,
@@ -125,6 +139,7 @@ class TiendaTenis:
     ) -> Optional[str]:
 
         try:
+
             resultado = self.productos.insert_one({
                 "nombre": nombre,
                 "marca": marca,
@@ -155,10 +170,8 @@ class TiendaTenis:
         resultado = []
 
         for producto in productos:
-
             producto["_id"] = str(producto["_id"])
             producto["id_vendedor"] = str(producto["id_vendedor"])
-
             resultado.append(producto)
 
         return resultado
