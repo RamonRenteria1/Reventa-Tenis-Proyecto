@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva contraseña{% endblock %}
+
+{% block content %}
+
+<div class="card mx-auto shadow p-4" style="max-width: 450px;">
+
+    <h2 class="text-center mb-4">Nueva contraseña</h2>
+
+    <form method="POST">
+
+        <label>Nueva contraseña</label>
+        <input type="password" name="password" class="form-control mb-3" required>
+
+        <button class="btn btn-dark w-100">
+            Cambiar contraseña
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

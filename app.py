@@ -1,15 +1,30 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from tiendatenis import TiendaTenis
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 
 app = Flask(__name__)
-app.secret_key = "clave"
+app.secret_key = "1029300192"
 
 tienda = TiendaTenis()
 
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_PORT"] = 587
+app.config["MAIL_USE_TLS"] = True
+app.config["MAIL_USERNAME"] = "shoesstorenr@gmail.com"
+app.config["MAIL_PASSWORD"] = "jzmedprekphjkeyr"
+
+mail = Mail(app)
+
+
+serializer = URLSafeTimedSerializer(app.secret_key)
 
 @app.route("/", methods=["GET", "POST"])
 def login():
+
+    if "usuario_id" in session:
+        return redirect(url_for("tienda_T"))
 
     if request.method == "POST":
 
@@ -22,10 +37,10 @@ def login():
         )
 
         if not usuario:
-            flash("Correo o contraseña incorrectos","danger")
+            flash("Correo o contraseña incorrectos", "danger")
             return redirect(url_for("login"))
 
-        session["usuario_id"] = usuario["_id"]
+        session["usuario_id"] = str(usuario["_id"])
         session["nombre"] = usuario["nombre"]
         session["tipo"] = usuario["tipo"]
 
@@ -33,7 +48,6 @@ def login():
         return redirect(url_for("tienda_T"))
 
     return render_template("login.html")
-
 
 @app.route("/registro", methods=["GET", "POST"])
 def registro():
@@ -128,10 +142,85 @@ def agregar_producto():
     return render_template("agregar_producto.html")
 
 
-@app.route("/recuperar")
+@app.route("/recuperar", methods=["GET", "POST"])
 def recuperar():
 
+    if request.method == "POST":
+
+        email = request.form["email"]
+
+        usuario = tienda.usuarios.find_one({
+            "email": email
+        })
+
+        if not usuario:
+            flash("No existe una cuenta con ese correo", "danger")
+            return redirect(url_for("recuperar"))
+
+        token = serializer.dumps(email, salt="recuperar-password")
+
+        link = url_for(
+            "restablecer",
+            token=token,
+            _external=True
+        )
+
+        mensaje = Message(
+            "Recuperar contraseña",
+            sender=app.config["MAIL_USERNAME"],
+            recipients=[email]
+        )
+
+        mensaje.body = f"""
+        Hola {usuario["nombre"]}
+
+        Para cambiar tu contraseña entra al siguiente link:
+
+        {link}
+
+        Este enlace expira en 15 minutos.
+        """
+
+        mail.send(mensaje)
+
+        flash("Te mandamos un correo para cambiar tu contraseña", "success")
+        return redirect(url_for("login"))
+
     return render_template("recuperar.html")
+
+@app.route("/restablecer/<token>", methods=["GET", "POST"])
+def restablecer(token):
+
+    try:
+        email = serializer.loads(
+            token,
+            salt="recuperar-password",
+            max_age=900
+        )
+
+    except:
+        flash("El enlace no es válido o ya expiró", "danger")
+        return redirect(url_for("recuperar"))
+
+    if request.method == "POST":
+
+        nueva_password = request.form["password"]
+
+        password_segura = generate_password_hash(nueva_password)
+
+        tienda.usuarios.update_one(
+            {"email": email},
+            {
+                "$set": {
+                    "password": password_segura
+                }
+            }
+        )
+
+        flash("Contraseña actualizada correctamente", "success")
+        return redirect(url_for("login"))
+
+    return render_template("restablecer.html")
 
 
 @app.route("/logout")

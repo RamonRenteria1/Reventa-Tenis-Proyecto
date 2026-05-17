@@ -49,19 +49,15 @@
 
 <body>
 
+    {% if session.get('usuario_id') %}
+
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
 
         <div class="container">
 
             <a class="navbar-brand fw-bold" href="{{ url_for('tienda_T') }}">
-
                 SHOES STORE
-
             </a>
-
-
-
-            {% if session.get('usuario_id') %}
 
             <form class="d-flex mx-auto w-50" method="GET" action="{{ url_for('tienda_T') }}">
 
@@ -69,14 +65,10 @@
                     placeholder="Buscar tenis...">
 
                 <button class="btn btn-info rounded-end-pill px-4" type="submit">
-
                     Buscar
-
                 </button>
 
             </form>
-
-            {% endif %}
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
 
@@ -87,8 +79,6 @@
             <div class="collapse navbar-collapse" id="menu">
 
                 <ul class="navbar-nav ms-auto align-items-lg-center">
-
-                    {% if session.get('usuario_id') %}
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('tienda_T') }}">
@@ -101,9 +91,7 @@
                     <li class="nav-item">
 
                         <a class="nav-link" href="{{ url_for('agregar_producto') }}">
-
                             Agregar Producto
-
                         </a>
 
                     </li>
@@ -113,9 +101,7 @@
                     <li class="nav-item">
 
                         <span class="nav-link text-success fw-bold">
-
                             {{ session.get('nombre') }}
-
                         </span>
 
                     </li>
@@ -123,36 +109,10 @@
                     <li class="nav-item ms-lg-2">
 
                         <a class="btn btn-outline-light rounded-pill px-3" href="{{ url_for('logout') }}">
-
                             Salir
-
                         </a>
 
                     </li>
-
-                    {% else %}
-
-                    <li class="nav-item">
-
-                        <a class="nav-link" href="{{ url_for('login') }}">
-
-                            Iniciar Sesión
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item ms-lg-2">
-
-                        <a class="btn btn-info rounded-pill px-3" href="{{ url_for('registro') }}">
-
-                            Registrarse
-
-                        </a>
-
-                    </li>
-
-                    {% endif %}
 
                 </ul>
 
@@ -161,6 +121,8 @@
         </div>
 
     </nav>
+
+    {% endif %}
 
     <main class="container mt-4">
 
