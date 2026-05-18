@@ -1,119 +1,81 @@
 {% extends "base.html" %}
 
-{% block title %}Tienda de Tenis{% endblock %}
+{% block title %}Shoes Store - Tienda{% endblock %}
 
 {% block content %}
 
-<style>
-    .producto-img {
+<div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded shadow-sm">
+    <div>
+        <h4>Explora los últimos lanzamientos</h4>
+        <p class="text-muted mb-0">Explora los últimos lanzamientos automáticamente cycles.</p>
+    </div>
+    <div>
+        <img src="{{ url_for('static', filename='img/banner.png') }}" alt="Banner" style="height: 80px;">
+    </div>
+</div>
 
-        height: 250px;
-        width: 100%;
+<div class="row">
 
-        object-fit: cover;
+    <div class="col-md-3 mb-4">
+        <h5>Filtros Rápidos</h5>
+        <form method="GET" action="{{ url_for('tienda_T') }}">
 
-        border-top-left-radius: 12px;
-        border-top-right-radius: 12px;
+            <div class="mb-3">
+                <strong>Por Marca</strong><br>
+                {% for marca in ['Marc', 'Marco'] %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="marca" value="{{ marca }}"
+                        id="marca-{{ marca }}">
+                    <label class="form-check-label" for="marca-{{ marca }}">{{ marca }}</label>
+                </div>
+                {% endfor %}
+            </div>
 
-    }
+            <div class="mb-3">
+                <strong>Por Estado</strong><br>
+                {% for estado in ['Anmera', 'Balo', 'Estado', 'Estado de types'] %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="estado" value="{{ estado }}"
+                        id="estado-{{ estado }}">
+                    <label class="form-check-label" for="estado-{{ estado }}">{{ estado }}</label>
+                </div>
+                {% endfor %}
+            </div>
 
-    .producto-card {
+            <div class="mb-3">
+                <strong>Estado de Usuario</strong><br>
+                {% for usuario_estado in ['Marca', 'Status', 'Usuari'] %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="usuario_estado" value="{{ usuario_estado }}"
+                        id="usuario-{{ usuario_estado }}"
+                        {% if usuario_estado == 'Marca' %}checked{% endif %}>
+                    <label class="form-check-label" for="usuario-{{ usuario_estado }}">{{ usuario_estado }}</label>
+                </div>
+                {% endfor %}
+            </div>
 
-        height: 100%;
-
-    }
-</style>
-
-<div class="container mt-4">
-
-    <div class="text-center mb-4">
-
-        <h1 class="fw-bold">
-            Tienda de Tenis
-        </h1>
-
-        <p class="text-muted">
-            Encuentra tenis nuevos y seminuevos
-        </p>
-
+            <button type="submit" class="btn btn-info w-100">Aplicar Filtros</button>
+        </form>
     </div>
 
-    <div class="row">
-
-        <div class="col-md-4 mb-4">
-
-            <div class="card shadow border-0 producto-card">
-
-                <img src="/static/img/tenis1.jpg" class="producto-img" alt="Nike Dunk Low Panda">
-
-                <div class="card-body">
-
-                    <h5 class="card-title fw-bold">
-                        Nike Dunk Low Panda
-                    </h5>
-
-                    <p class="card-text">
-
-                        Marca: Nike <br>
-                        Tipo: Low <br>
-                        Talla: 27 <br>
-                        Condición: Nuevo
-
-                    </p>
-
-                    <h4 class="text-success fw-bold">
-                        $3,200
-                    </h4>
-
-                    <a href="#" class="btn btn-dark w-100 rounded-pill">
-
-                        Ver producto
-
-                    </a>
-
+    <div class="col-md-9">
+        <div class="row g-3">
+            {% for producto in productos %}
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100 {% if producto.resaltado %}bg-secondary text-white{% endif %}">
+                    <img src="{{ producto.imagen }}" class="card-img-top" alt="{{ producto.nombre }}">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ producto.nombre }}</h6>
+                        {% if producto.precio %}
+                        <p class="text-success fw-bold mb-1">${{ producto.precio }}</p>
+                        {% endif %}
+                        <p class="text-muted mb-1">Estado: {{ producto.estado }}</p>
+                        <p class="text-muted mb-0">Vendedor: {{ producto.vendedor }}</p>
+                    </div>
                 </div>
-
             </div>
-
+            {% endfor %}
         </div>
-
-        <div class="col-md-4 mb-4">
-
-            <div class="card shadow border-0 producto-card">
-
-                <img src="/static/img/tenis2.jpg" class="producto-img" alt="Air Jordan 1 Mid">
-
-                <div class="card-body">
-
-                    <h5 class="card-title fw-bold">
-                        Air Jordan 1 Mid
-                    </h5>
-
-                    <p class="card-text">
-
-                        Marca: Nike <br>
-                        Tipo: Mid <br>
-                        Talla: 28 <br>
-                        Condición: Nuevo
-
-                    </p>
-
-                    <h4 class="text-success fw-bold">
-                        $4,200
-                    </h4>
-
-                    <a href="#" class="btn btn-dark w-100 rounded-pill">
-
-                        Ver producto
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
     </div>
 
 </div>
