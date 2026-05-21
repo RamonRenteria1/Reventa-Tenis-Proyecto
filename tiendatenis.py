@@ -135,11 +135,11 @@ class TiendaTenis:
         precio: float,
         condicion: str,
         stock: int,
-        id_vendedor: str
+        id_vendedor: str,
+        imagen: str
     ) -> Optional[str]:
 
         try:
-
             resultado = self.productos.insert_one({
                 "nombre": nombre,
                 "marca": marca,
@@ -151,6 +151,7 @@ class TiendaTenis:
                 "condicion": condicion,
                 "stock": stock,
                 "id_vendedor": ObjectId(id_vendedor),
+                "imagen": imagen,
                 "fecha_publicacion": datetime.now(),
                 "activo": True
             })

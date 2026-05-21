@@ -104,43 +104,67 @@ def agregar_producto():
         return redirect(url_for("login"))
 
     if session["tipo"] != "vendedor":
-        flash("Solo los vendedores pueden agregar productos", "danger")
-        return redirect(url_for("tienda_page"))
+
+        flash(
+            "Solo los vendedores pueden agregar modelos",
+            "warning"
+        )
+
+        return redirect(url_for("tienda_T"))
 
     if request.method == "POST":
 
         nombre = request.form["nombre"]
+
         marca = request.form["marca"]
-        modelo = request.form["modelo"]
+
         tipo = request.form["tipo"]
+
         color = request.form["color"]
+
         talla = int(request.form["talla"])
-        precio = float(request.form["precio"])
-        condicion = request.form["condicion"]
+
         stock = int(request.form["stock"])
 
+        precio = float(request.form["precio"])
+
+        condicion = request.form["condicion"]
+
+        imagen = request.form["imagen"]
+
         producto_id = tienda.agregar_producto(
+
             nombre,
             marca,
-            modelo,
+            nombre,
             tipo,
             color,
             talla,
             precio,
             condicion,
             stock,
-            session["usuario_id"]
+            session["usuario_id"],
+            imagen
+
         )
 
         if producto_id:
-            flash("Producto agregado correctamente", "success")
-            return redirect(url_for("tienda_page"))
 
-        flash("Error al agregar producto")
+            flash(
+                "Modelo publicado correctamente",
+                "success"
+            )
+
+            return redirect(url_for("tienda_T"))
+
+        flash(
+            "Error al publicar el modelo",
+            "danger"
+        )
+
         return redirect(url_for("agregar_producto"))
 
     return render_template("agregar_producto.html")
-
 
 @app.route("/recuperar", methods=["GET", "POST"])
 def recuperar():

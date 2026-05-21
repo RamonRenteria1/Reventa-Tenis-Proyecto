@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Agregar Modelo{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center mt-4">
+
+    <div class="col-lg-8">
+
+        <div class="card shadow-lg border-0 border-top border-success border-4">
+
+            <div class="card-body p-4">
+
+                <h2 class="text-center fw-bold mb-4">
+                    Agregar Modelo
+                </h2>
+
+                <form method="POST">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold small text-muted">
+                                Modelo
+                            </label>
+
+                            <input type="text"
+                                   name="nombre"
+                                   class="form-control"
+                                   placeholder="Nike Dunk Low Panda"
+                                   required>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold small text-muted">
+                                Marca
+                            </label>
+
+                            <select name="marca"
+                                    class="form-select"
+                                    required>
+
+                                <option value="">
+                                    Selecciona una marca
+                                </option>
+
+                                <option value="Nike">
+                                    Nike
+                                </option>
+
+                                <option value="Adidas">
+                                    Adidas
+                                </option>
+
+                                <option value="Puma">
+                                    Puma
+                                </option>
+
+                                <option value="New Balance">
+                                    New Balance
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold small text-muted">
+                                Tipo
+                            </label>
+
+                            <select name="tipo"
+                                    class="form-select"
+                                    required>
+
+                                <option value="">
+                                    Selecciona un tipo
+                                </option>
+
+                                <option value="Low">
+                                    Low
+                                </option>
+
+                                <option value="Mid">
+                                    Mid
+                                </option>
+
+                                <option value="High">
+                                    High
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold small text-muted">
+                                Color
+                            </label>
+
+                            <input type="text"
+                                   name="color"
+                                   class="form-control"
+                                   placeholder="Blanco y negro"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-bold small text-muted">
+                                Talla
+                            </label>
+
+                            <input type="number"
+                                   name="talla"
+                                   class="form-control"
+                                   placeholder="27"
+                                   required>
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-bold small text-muted">
+                                Stock
+                            </label>
+
+                            <input type="number"
+                                   name="stock"
+                                   class="form-control"
+                                   placeholder="1"
+                                   required>
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label fw-bold small text-muted">
+                                Precio
+                            </label>
+
+                            <input type="number"
+                                   name="precio"
+                                   class="form-control"
+                                   placeholder="3200"
+                                   required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-4">
+
+                            <label class="form-label fw-bold small text-muted">
+                                Condición
+                            </label>
+
+                            <select name="condicion"
+                                    class="form-select"
+                                    required>
+
+                                <option value="">
+                                    Selecciona una condición
+                                </option>
+
+                                <option value="Nuevo">
+                                    Nuevo
+                                </option>
+
+                                <option value="Seminuevo">
+                                    Seminuevo
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+
+                            <label class="form-label fw-bold small text-muted">
+                                URL de la Imagen
+                            </label>
+
+                            <input type="text"
+                                   name="imagen"
+                                   class="form-control"
+                                   placeholder="https://imagen.com/tenis.jpg">
+
+                        </div>
+
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-dark w-100 rounded-pill py-2 fw-bold">
+
+                        Publicar Modelo
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
