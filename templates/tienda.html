@@ -30,18 +30,11 @@
                 {% for marca in ['Nike', 'Adidas', 'Puma', 'New Balance'] %}
                 <div class="form-check">
                     <input class="form-check-input"
-<<<<<<< HEAD
-                            type="checkbox"
-                            name="marca"
-                            value="{{ marca }}"
-                            id="marca-{{ marca }}">
-=======
                            type="checkbox"
                            name="marca"
                            value="{{ marca }}"
                            id="marca-{{ marca }}"
                            {% if marca in request.args.getlist('marca') %}checked{% endif %}>
->>>>>>> aafdff5e9de64fe6670b371670234a5678ab71b9
 
                     <label class="form-check-label" for="marca-{{ marca }}">
                         {{ marca }}
@@ -56,18 +49,11 @@
                 {% for condicion in ['Nuevo', 'Seminuevo'] %}
                 <div class="form-check">
                     <input class="form-check-input"
-<<<<<<< HEAD
-                            type="checkbox"
-                            name="condicion"
-                            value="{{ condicion }}"
-                            id="condicion-{{ condicion }}">
-=======
                            type="checkbox"
                            name="condicion"
                            value="{{ condicion }}"
                            id="condicion-{{ condicion }}"
                            {% if condicion in request.args.getlist('condicion') %}checked{% endif %}>
->>>>>>> aafdff5e9de64fe6670b371670234a5678ab71b9
 
                     <label class="form-check-label" for="condicion-{{ condicion }}">
                         {{ condicion }}
@@ -90,15 +76,9 @@
 
             <div class="col-md-4">
 
-<<<<<<< HEAD
-                <div class="card shadow-sm h-100"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalProducto{{ producto._id }}">
-=======
                 <div class="card card-product shadow-sm h-100"
                      data-bs-toggle="modal"
                      data-bs-target="#modalProducto{{ producto._id }}">
->>>>>>> aafdff5e9de64fe6670b371670234a5678ab71b9
 
                     <img src="{{ producto.imagen }}"
                         class="card-img-top"
