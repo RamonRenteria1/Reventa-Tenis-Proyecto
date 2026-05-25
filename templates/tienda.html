@@ -6,75 +6,187 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded shadow-sm">
     <div>
-        <h4>Explora los últimos lanzamientos</h4>
-        <p class="text-muted mb-0">Explora los últimos lanzamientos automáticamente cycles.</p>
+        <h4 class="fw-bold">Explora los últimos lanzamientos</h4>
+        <p class="text-muted mb-0">Encuentra tenis nuevos y seminuevos disponibles.</p>
     </div>
+
     <div>
-        <img src="{{ url_for('static', filename='img/banner.png') }}" alt="Banner" style="height: 80px;">
+        <img src="{{ url_for('static', filename='img/banner.png') }}"
+             alt="Banner"
+             height="80">
     </div>
 </div>
 
 <div class="row">
 
     <div class="col-md-3 mb-4">
-        <h5>Filtros Rápidos</h5>
+        <h5 class="fw-bold">Filtros Rápidos</h5>
+
         <form method="GET" action="{{ url_for('tienda_T') }}">
 
             <div class="mb-3">
                 <strong>Por Marca</strong><br>
-                {% for marca in ['Marc', 'Marco'] %}
+
+                {% for marca in ['Nike', 'Adidas', 'Puma', 'New Balance'] %}
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="marca" value="{{ marca }}"
-                        id="marca-{{ marca }}">
-                    <label class="form-check-label" for="marca-{{ marca }}">{{ marca }}</label>
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="marca"
+                           value="{{ marca }}"
+                           id="marca-{{ marca }}">
+
+                    <label class="form-check-label" for="marca-{{ marca }}">
+                        {{ marca }}
+                    </label>
                 </div>
                 {% endfor %}
             </div>
 
             <div class="mb-3">
                 <strong>Por Estado</strong><br>
-                {% for estado in ['Anmera', 'Balo', 'Estado', 'Estado de types'] %}
+
+                {% for condicion in ['Nuevo', 'Seminuevo'] %}
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="estado" value="{{ estado }}"
-                        id="estado-{{ estado }}">
-                    <label class="form-check-label" for="estado-{{ estado }}">{{ estado }}</label>
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="condicion"
+                           value="{{ condicion }}"
+                           id="condicion-{{ condicion }}">
+
+                    <label class="form-check-label" for="condicion-{{ condicion }}">
+                        {{ condicion }}
+                    </label>
                 </div>
                 {% endfor %}
             </div>
 
-            <div class="mb-3">
-                <strong>Estado de Usuario</strong><br>
-                {% for usuario_estado in ['Marca', 'Status', 'Usuari'] %}
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="usuario_estado" value="{{ usuario_estado }}"
-                        id="usuario-{{ usuario_estado }}"
-                        {% if usuario_estado == 'Marca' %}checked{% endif %}>
-                    <label class="form-check-label" for="usuario-{{ usuario_estado }}">{{ usuario_estado }}</label>
-                </div>
-                {% endfor %}
-            </div>
+            <button type="submit" class="btn btn-info w-100">
+                Aplicar Filtros
+            </button>
 
-            <button type="submit" class="btn btn-info w-100">Aplicar Filtros</button>
         </form>
     </div>
 
     <div class="col-md-9">
         <div class="row g-3">
+
             {% for producto in productos %}
+
             <div class="col-md-4">
-                <div class="card shadow-sm h-100 {% if producto.resaltado %}bg-secondary text-white{% endif %}">
-                    <img src="{{ producto.imagen }}" class="card-img-top" alt="{{ producto.nombre }}">
+
+                <div class="card shadow-sm h-100"
+                     data-bs-toggle="modal"
+                     data-bs-target="#modalProducto{{ producto._id }}">
+
+                    <img src="{{ producto.imagen }}"
+                         class="card-img-top"
+                         height="230"
+                         alt="{{ producto.nombre }}">
+
                     <div class="card-body">
-                        <h6 class="card-title">{{ producto.nombre }}</h6>
-                        {% if producto.precio %}
-                        <p class="text-success fw-bold mb-1">${{ producto.precio }}</p>
-                        {% endif %}
-                        <p class="text-muted mb-1">Estado: {{ producto.estado }}</p>
-                        <p class="text-muted mb-0">Vendedor: {{ producto.vendedor }}</p>
+
+                        <h6 class="card-title fw-bold">
+                            {{ producto.nombre }}
+                        </h6>
+
+                        <p class="text-success fw-bold mb-1">
+                            ${{ producto.precio }}
+                        </p>
+
+                        <p class="text-muted mb-1">
+                            Estado: {{ producto.condicion }}
+                        </p>
+
+                        <p class="text-muted mb-0">
+                            Unidades: {{ producto.stock }}
+                        </p>
+
                     </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal fade"
+                 id="modalProducto{{ producto._id }}"
+                 tabindex="-1">
+
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header bg-dark text-white">
+
+                            <h5 class="modal-title">
+                                {{ producto.nombre }}
+                            </h5>
+
+                            <button type="button"
+                                    class="btn-close btn-close-white"
+                                    data-bs-dismiss="modal">
+                            </button>
+
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+
+                                    <img src="{{ producto.imagen }}"
+                                         class="img-fluid rounded"
+                                         alt="{{ producto.nombre }}">
+
+                                </div>
+
+                                <div class="col-md-6">
+
+                                    <h3 class="fw-bold">
+                                        {{ producto.nombre }}
+                                    </h3>
+
+                                    <h4 class="text-success fw-bold">
+                                        ${{ producto.precio }}
+                                    </h4>
+
+                                    <p><strong>Marca:</strong> {{ producto.marca }}</p>
+                                    <p><strong>Modelo:</strong> {{ producto.modelo }}</p>
+                                    <p><strong>Tipo:</strong> {{ producto.tipo }}</p>
+                                    <p><strong>Color:</strong> {{ producto.color }}</p>
+                                    <p><strong>Talla:</strong> {{ producto.talla }}</p>
+                                    <p><strong>Estado:</strong> {{ producto.condicion }}</p>
+                                    <p><strong>Unidades disponibles:</strong> {{ producto.stock }}</p>
+
+                                    <button class="btn btn-dark w-100 rounded-pill">
+                                        Agregar al carrito
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% else %}
+
+            <div class="col-12">
+                <div class="card shadow-sm p-4 text-center">
+                    <h5 class="fw-bold">No hay modelos publicados</h5>
+                    <p class="text-muted mb-0">
+                        Cuando un vendedor agregue modelos aparecerán aquí.
+                    </p>
                 </div>
             </div>
+
             {% endfor %}
+
         </div>
     </div>
 
