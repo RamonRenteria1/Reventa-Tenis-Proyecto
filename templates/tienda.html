@@ -12,8 +12,8 @@
 
     <div>
         <img src="{{ url_for('static', filename='img/banner.png') }}"
-             alt="Banner"
-             height="80">
+                alt="Banner"
+                height="80">
     </div>
 </div>
 
@@ -30,11 +30,18 @@
                 {% for marca in ['Nike', 'Adidas', 'Puma', 'New Balance'] %}
                 <div class="form-check">
                     <input class="form-check-input"
+<<<<<<< HEAD
+                            type="checkbox"
+                            name="marca"
+                            value="{{ marca }}"
+                            id="marca-{{ marca }}">
+=======
                            type="checkbox"
                            name="marca"
                            value="{{ marca }}"
                            id="marca-{{ marca }}"
                            {% if marca in request.args.getlist('marca') %}checked{% endif %}>
+>>>>>>> aafdff5e9de64fe6670b371670234a5678ab71b9
 
                     <label class="form-check-label" for="marca-{{ marca }}">
                         {{ marca }}
@@ -49,11 +56,18 @@
                 {% for condicion in ['Nuevo', 'Seminuevo'] %}
                 <div class="form-check">
                     <input class="form-check-input"
+<<<<<<< HEAD
+                            type="checkbox"
+                            name="condicion"
+                            value="{{ condicion }}"
+                            id="condicion-{{ condicion }}">
+=======
                            type="checkbox"
                            name="condicion"
                            value="{{ condicion }}"
                            id="condicion-{{ condicion }}"
                            {% if condicion in request.args.getlist('condicion') %}checked{% endif %}>
+>>>>>>> aafdff5e9de64fe6670b371670234a5678ab71b9
 
                     <label class="form-check-label" for="condicion-{{ condicion }}">
                         {{ condicion }}
@@ -76,14 +90,20 @@
 
             <div class="col-md-4">
 
+<<<<<<< HEAD
+                <div class="card shadow-sm h-100"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalProducto{{ producto._id }}">
+=======
                 <div class="card card-product shadow-sm h-100"
                      data-bs-toggle="modal"
                      data-bs-target="#modalProducto{{ producto._id }}">
+>>>>>>> aafdff5e9de64fe6670b371670234a5678ab71b9
 
                     <img src="{{ producto.imagen }}"
-                         class="card-img-top"
-                         height="230"
-                         alt="{{ producto.nombre }}">
+                        class="card-img-top"
+                        height="230"
+                        alt="{{ producto.nombre }}">
 
                     <div class="card-body">
 
@@ -109,9 +129,10 @@
 
             </div>
 
+            <!-- MODAL DEL PRODUCTO CON CARRITO -->
             <div class="modal fade"
-                 id="modalProducto{{ producto._id }}"
-                 tabindex="-1">
+                    id="modalProducto{{ producto._id }}"
+                    tabindex="-1">
 
                 <div class="modal-dialog modal-lg modal-dialog-centered">
 
@@ -137,8 +158,8 @@
                                 <div class="col-md-6">
 
                                     <img src="{{ producto.imagen }}"
-                                         class="img-fluid rounded"
-                                         alt="{{ producto.nombre }}">
+                                        class="img-fluid rounded"
+                                        alt="{{ producto.nombre }}">
 
                                 </div>
 
@@ -160,9 +181,35 @@
                                     <p><strong>Estado:</strong> {{ producto.condicion }}</p>
                                     <p><strong>Unidades disponibles:</strong> {{ producto.stock }}</p>
 
-                                    <button class="btn btn-dark w-100 rounded-pill">
-                                        Agregar al carrito
-                                    </button>
+                                    <!-- FORMULARIO DEL CARRITO DENTRO DEL MODAL -->
+                                    <form method="POST" action="{{ url_for('agregar_carrito', producto_id=producto._id) }}" class="mt-3">
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <label class="form-label small">Talla</label>
+                                                <select name="talla" class="form-select" required>
+                                                    <option value="">Seleccionar talla</option>
+                                                    {% for t in range(35, 46) %}
+                                                    <option value="{{ t }}">{{ t }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <label class="form-label small">Cantidad</label>
+                                                <input type="number" 
+                                                       name="cantidad" 
+                                                       value="1" 
+                                                       min="1" 
+                                                       max="{{ producto.stock }}" 
+                                                       class="form-control">
+                                            </div>
+                                            <div class="col-2">
+                                                <label class="form-label small">&nbsp;</label>
+                                                <button type="submit" class="btn btn-success w-100">
+                                                    🛒
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
 
                                 </div>
 

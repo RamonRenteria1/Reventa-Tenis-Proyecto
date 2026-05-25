@@ -344,5 +344,63 @@ def logout():
 
     return redirect(url_for("login"))
 
+# ============ RUTAS DEL CARRITO ============
+
+@app.route("/carrito")
+def ver_carrito():
+    if "usuario_id" not in session:
+        flash("Inicia sesión para ver tu carrito", "warning")
+        return redirect(url_for("login"))
+    
+    carrito = tienda.obtener_carrito(session["usuario_id"])
+    return render_template("carrito.html", carrito=carrito)
+
+@app.route("/agregar_carrito/<producto_id>", methods=["POST"])
+def agregar_carrito(producto_id):
+    if "usuario_id" not in session:
+        flash("Inicia sesión para agregar productos al carrito", "warning")
+        return redirect(url_for("login"))
+    
+    talla = int(request.form["talla"])
+    cantidad = int(request.form.get("cantidad", 1))
+    
+    if tienda.agregar_al_carrito(session["usuario_id"], producto_id, talla, cantidad):
+        flash("Producto agregado al carrito ✅", "success")
+    else:
+        flash("Error al agregar el producto", "danger")
+    
+    return redirect(url_for("tienda_T"))
+
+@app.route("/quitar_carrito/<producto_id>/<int:talla>")
+def quitar_carrito(producto_id, talla):
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+    
+    tienda.quitar_del_carrito(session["usuario_id"], producto_id, talla)
+    flash("Producto eliminado del carrito", "success")
+    return redirect(url_for("ver_carrito"))
+
+@app.route("/actualizar_carrito", methods=["POST"])
+def actualizar_carrito():
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+    
+    producto_id = request.form["producto_id"]
+    talla = int(request.form["talla"])
+    cantidad = int(request.form["cantidad"])
+    
+    tienda.actualizar_cantidad(session["usuario_id"], producto_id, talla, cantidad)
+    
+    return redirect(url_for("ver_carrito"))
+
+# API para el contador del carrito (NECESARIO)
+@app.route("/api/carrito/count")
+def api_carrito_count():
+    if "usuario_id" not in session:
+        return {"total_items": 0}
+    
+    carrito = tienda.obtener_carrito(session["usuario_id"])
+    return {"total_items": carrito["total_items"]}
+
 if __name__ == "__main__":
     app.run(debug=True)

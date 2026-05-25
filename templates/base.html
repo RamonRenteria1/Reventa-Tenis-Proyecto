@@ -76,6 +76,14 @@
             color: #e9e7df;
             border-top: 1px solid rgba(255, 255, 255, 0.12);
         }
+        
+        /* Estilo para el contador del carrito */
+        .cart-badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            margin-top: -0.5rem;
+            margin-right: -0.5rem;
+        }
     </style>
 
 </head>
@@ -132,6 +140,20 @@
 
                     {% endif %}
 
+<<<<<<< HEAD
+                    <!-- CARRITO CON CONTADOR - AGREGADO -->
+                    <li class="nav-item">
+                        <a class="nav-link position-relative" href="{{ url_for('ver_carrito') }}">
+                            🛒 Carrito
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge" 
+                                  id="carrito-contador" style="display: none;">
+                                0
+                            </span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+=======
                     <li class="nav-item dropdown ms-lg-2">
                         <a class="nav-link dropdown-toggle d-flex align-items-center"
                            href="#"
@@ -143,6 +165,7 @@
                             <span class="profile-badge me-2">
                                 {{ session.get('nombre')[0] if session.get('nombre') else 'U' }}
                             </span>
+>>>>>>> aafdff5e9de64fe6670b371670234a5678ab71b9
 
                             {{ session.get('nombre') }}
 
@@ -203,6 +226,32 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- SCRIPT PARA ACTUALIZAR CONTADOR DEL CARRITO -->
+    <script>
+        function actualizarContadorCarrito() {
+            fetch('/api/carrito/count')
+                .then(response => response.json())
+                .then(data => {
+                    const contador = document.getElementById('carrito-contador');
+                    if (contador) {
+                        if (data.total_items > 0) {
+                            contador.textContent = data.total_items;
+                            contador.style.display = 'inline-block';
+                        } else {
+                            contador.style.display = 'none';
+                        }
+                    }
+                })
+                .catch(error => console.error('Error al cargar contador:', error));
+        }
+        
+        // Actualizar cada 15 segundos
+        setInterval(actualizarContadorCarrito, 15000);
+        
+        // Actualizar al cargar la página
+        document.addEventListener('DOMContentLoaded', actualizarContadorCarrito);
+    </script>
 
 </body>
 
