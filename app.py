@@ -3,6 +3,7 @@ from tiendatenis import TiendaTenis
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 app.secret_key = "1029300192"
@@ -89,12 +90,100 @@ def tienda_T():
     if "usuario_id" not in session:
         return redirect(url_for("login"))
 
-    productos = tienda.obtener_productos()
+    marcas = request.args.getlist("marca")
+    condiciones = request.args.getlist("condicion")
+    busqueda = request.args.get("buscar", "").strip()
+
+    filtros = {"activo": True}
+
+    if marcas:
+        filtros["marca"] = {"$in": marcas}
+
+    if condiciones:
+        filtros["condicion"] = {"$in": condiciones}
+
+    if busqueda:
+        patrón = {"$regex": busqueda, "$options": "i"}
+        filtros["$or"] = [
+            {"nombre": patrón},
+            {"marca": patrón},
+            {"modelo": patrón},
+            {"tipo": patrón},
+            {"color": patrón}
+        ]
+
+    productos = tienda.obtener_productos(filtros)
 
     return render_template(
         "tienda.html",
         productos=productos
     )
+
+
+@app.route("/perfil")
+def perfil():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    usuario = tienda.obtener_usuario(session["usuario_id"])
+
+    if not usuario:
+        return redirect(url_for("login"))
+
+    return render_template(
+        "perfil.html",
+        usuario=usuario
+    )
+
+
+@app.route("/editar_perfil", methods=["GET", "POST"])
+def editar_perfil():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    usuario = tienda.obtener_usuario(session["usuario_id"])
+
+    if not usuario:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        nombre = request.form["nombre"].strip()
+        email = request.form["email"].strip().lower()
+
+        if not nombre or not email:
+            flash("Nombre y correo son obligatorios", "warning")
+            return redirect(url_for("editar_perfil"))
+
+        existente = tienda.usuarios.find_one({
+            "email": email,
+            "_id": {"$ne": ObjectId(session["usuario_id"])}
+        })
+
+        if existente:
+            flash("El correo ya está en uso", "danger")
+            return redirect(url_for("editar_perfil"))
+
+        tienda.usuarios.update_one(
+            {"_id": ObjectId(session["usuario_id"])},
+            {"$set": {"nombre": nombre, "email": email}}
+        )
+
+        session["nombre"] = nombre
+        flash("Perfil actualizado correctamente", "success")
+        return redirect(url_for("perfil"))
+
+    return render_template(
+        "editar_perfil.html",
+        usuario=usuario
+    )
+
+
+@app.route("/acerca")
+def acerca():
+
+    return render_template("acerca.html")
 
 
 @app.route("/agregar_producto", methods=["GET", "POST"])

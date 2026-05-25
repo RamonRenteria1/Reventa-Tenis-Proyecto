@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil - Shoes Store{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm p-4 mb-4">
+            <div class="d-flex align-items-center mb-3">
+                <div class="profile-badge me-3" style="width: 56px; height: 56px; font-size: 1.4rem;">
+                    {{ usuario.nombre[0] if usuario.nombre else 'U' }}
+                </div>
+                <div>
+                    <h3 class="mb-1">{{ usuario.nombre }}</h3>
+                    <p class="text-muted mb-0">{{ usuario.email }}</p>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="border rounded p-3 bg-white">
+                        <h6 class="mb-2">Tipo de usuario</h6>
+                        <p class="mb-0 text-muted">{{ usuario.tipo | capitalize }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 bg-white">
+                        <h6 class="mb-2">Estado</h6>
+                        <p class="mb-0 text-muted">Activo</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="{{ url_for('editar_perfil') }}" class="btn btn-filter px-4">Editar perfil</a>
+                <a href="{{ url_for('acerca') }}" class="btn btn-outline-secondary ms-2">Acerca de</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

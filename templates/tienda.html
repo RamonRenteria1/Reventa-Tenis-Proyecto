@@ -19,7 +19,7 @@
 
 <div class="row">
 
-    <div class="col-md-3 mb-4">
+    <div class="col-md-3 mb-4 filter-panel">
         <h5 class="fw-bold">Filtros Rápidos</h5>
 
         <form method="GET" action="{{ url_for('tienda_T') }}">
@@ -33,7 +33,8 @@
                            type="checkbox"
                            name="marca"
                            value="{{ marca }}"
-                           id="marca-{{ marca }}">
+                           id="marca-{{ marca }}"
+                           {% if marca in request.args.getlist('marca') %}checked{% endif %}>
 
                     <label class="form-check-label" for="marca-{{ marca }}">
                         {{ marca }}
@@ -51,7 +52,8 @@
                            type="checkbox"
                            name="condicion"
                            value="{{ condicion }}"
-                           id="condicion-{{ condicion }}">
+                           id="condicion-{{ condicion }}"
+                           {% if condicion in request.args.getlist('condicion') %}checked{% endif %}>
 
                     <label class="form-check-label" for="condicion-{{ condicion }}">
                         {{ condicion }}
@@ -60,7 +62,7 @@
                 {% endfor %}
             </div>
 
-            <button type="submit" class="btn btn-info w-100">
+            <button type="submit" class="btn btn-filter w-100">
                 Aplicar Filtros
             </button>
 
@@ -74,7 +76,7 @@
 
             <div class="col-md-4">
 
-                <div class="card shadow-sm h-100"
+                <div class="card card-product shadow-sm h-100"
                      data-bs-toggle="modal"
                      data-bs-target="#modalProducto{{ producto._id }}">
 
@@ -93,7 +95,7 @@
                             ${{ producto.precio }}
                         </p>
 
-                        <p class="text-muted mb-1">
+                        <p class="product-status mb-1">
                             Estado: {{ producto.condicion }}
                         </p>
 
@@ -115,7 +117,7 @@
 
                     <div class="modal-content">
 
-                        <div class="modal-header bg-dark text-white">
+                        <div class="modal-header bg-light text-dark">
 
                             <h5 class="modal-title">
                                 {{ producto.nombre }}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Perfil - Shoes Store{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm p-4">
+            <h4 class="mb-4">Editar perfil</h4>
+
+            <form method="POST" action="{{ url_for('editar_perfil') }}">
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ usuario.nombre }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email }}" required>
+                </div>
+
+                <button type="submit" class="btn btn-filter">Guardar cambios</button>
+                <a href="{{ url_for('perfil') }}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

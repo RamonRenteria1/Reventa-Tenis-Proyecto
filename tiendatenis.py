@@ -197,13 +197,16 @@ class TiendaTenis:
             imagen
         )
 
-    def obtener_productos(self) -> List[Dict]:
-        """Obtener todos los productos activos"""
+    def obtener_productos(self, filtros: Optional[Dict] = None) -> List[Dict]:
+        """Obtener productos activos y opcionalmente aplicar filtros"""
 
         try:
-            productos = self.productos.find({
-                "activo": True
-            }).sort("fecha_publicacion", -1)
+            query = {"activo": True}
+
+            if filtros:
+                query.update(filtros)
+
+            productos = self.productos.find(query).sort("fecha_publicacion", -1)
 
             resultado = []
 
