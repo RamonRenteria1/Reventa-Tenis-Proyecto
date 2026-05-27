@@ -19,95 +19,95 @@
                 <form method="POST">
 
                     <div class="mb-3">
-
                         <label class="form-label small fw-bold text-muted">
                             Nombre Completo
                         </label>
 
-                        <input type="text" name="nombre" class="form-control border-secondary-subtle"
-                            placeholder="Ej. Ramón Rentería" required>
-
+                        <input type="text"
+                               name="nombre"
+                               class="form-control border-secondary-subtle"
+                               placeholder="Ej. Ramón Rentería"
+                               required>
                     </div>
 
                     <div class="mb-3">
-
                         <label class="form-label small fw-bold text-muted">
                             Correo Electrónico
                         </label>
 
-                        <input type="email" name="email" class="form-control border-secondary-subtle"
-                            placeholder="nombre@correo.com" required>
-
+                        <input type="email"
+                               name="email"
+                               class="form-control border-secondary-subtle"
+                               placeholder="nombre@correo.com"
+                               required>
                     </div>
 
                     <div class="row">
 
                         <div class="col-md-6 mb-3">
-
                             <label class="form-label small fw-bold text-muted">
                                 Contraseña
                             </label>
 
-                            <input type="password" name="password" class="form-control border-secondary-subtle"
-                                placeholder="••••••••" required>
-
+                            <input type="password"
+                                   name="password"
+                                   class="form-control border-secondary-subtle"
+                                   placeholder="••••••••"
+                                   required>
                         </div>
 
                         <div class="col-md-6 mb-3">
-
                             <label class="form-label small fw-bold text-muted">
-                                Tipo de Cuenta
+                                Confirmar Contraseña
                             </label>
 
-                            <select name="tipo" class="form-select border-secondary-subtle" required>
-
-                                <option value="">
-                                    Selecciona una opción
-                                </option>
-
-                                <option value="comprador">
-                                    Comprador
-                                </option>
-
-                                <option value="vendedor">
-                                    Vendedor
-                                </option>
-
-                            </select>
-
+                            <input type="password"
+                                   name="confirmar_password"
+                                   class="form-control border-secondary-subtle"
+                                   placeholder="••••••••"
+                                   required>
                         </div>
 
                     </div>
 
                     <div class="mb-4">
-
                         <label class="form-label small fw-bold text-muted">
-                            Confirmar Contraseña
+                            Tipo de Cuenta
                         </label>
 
-                        <input type="password" name="confirmar_password" class="form-control border-secondary-subtle"
-                            placeholder="••••••••" required>
+                        <select name="tipo"
+                                class="form-select border-secondary-subtle"
+                                required>
 
+                            <option value="">
+                                Selecciona una opción
+                            </option>
+
+                            <option value="comprador">
+                                Comprador
+                            </option>
+
+                            <option value="vendedor">
+                                Vendedor
+                            </option>
+
+                        </select>
                     </div>
 
-                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold py-2 border-info">
-
+                    <button type="submit"
+                            class="btn btn-dark w-100 rounded-pill fw-bold py-2 border-info">
                         Registrarme
-
                     </button>
 
                 </form>
 
                 <p class="text-center mt-3 small">
-
                     ¿Ya tienes cuenta?
 
-                    <a href="{{ url_for('login') }}" class="text-info fw-bold text-decoration-none">
-
+                    <a href="{{ url_for('login') }}"
+                       class="text-info fw-bold text-decoration-none">
                         Inicia sesión aquí
-
                     </a>
-
                 </p>
 
             </div>
