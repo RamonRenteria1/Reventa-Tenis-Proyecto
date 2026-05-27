@@ -1,124 +1,162 @@
-{% extends "base.html" %}
-
-{% block title %}Mi Carrito - Shoes Store{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Mi Carrito - Shoes Store{% endblock
+%} {% block content %}
 
 <div class="container mt-4">
-    <h2 class="mb-4">🛒 Mi Carrito</h2>
-    
-    {% if carrito.total_items == 0 %}
-    <div class="alert alert-info text-center shadow-sm">
-        <h4>Tu carrito está vacío 😢</h4>
-        <p class="mb-3">¡Explora nuestra tienda y encuentra los tenis que más te gustan!</p>
-        <a href="{{ url_for('tienda_T') }}" class="btn btn-primary rounded-pill px-4">
-            Ir a la tienda 🛍️
-        </a>
-    </div>
-    {% else %}
-    
-    <div class="row">
-        <!-- Lista de productos -->
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Productos agregados</h5>
-                    
-                    {% for item in carrito.get('items', []) %}
-                    <div class="row mb-4 pb-3 border-bottom align-items-center">
-                        <div class="col-md-2">
-                            <img src="{{ item.imagen }}" class="img-fluid rounded" 
-                                 style="height: 80px; width: 80px; object-fit: cover;"
-                                 onerror="this.src='https://via.placeholder.com/80'">
-                        </div>
-                        
-                        <div class="col-md-4">
-                            <h6 class="fw-bold mb-1">{{ item.nombre }}</h6>
-                            <p class="text-muted small mb-0">{{ item.marca }}</p>
-                            <span class="badge bg-secondary">Talla: {{ item.talla }}</span>
-                        </div>
-                        
-                        <div class="col-md-3">
-                            <form method="POST" action="{{ url_for('actualizar_carrito') }}" class="d-flex align-items-center">
-                                <input type="hidden" name="producto_id" value="{{ item.producto_id }}">
-                                <input type="hidden" name="talla" value="{{ item.talla }}">
-                                <label class="me-2 small">Cant:</label>
-                                <input type="number" name="cantidad" value="{{ item.cantidad }}" 
-                                       min="1" max="10" class="form-control form-control-sm w-50"
-                                       onchange="this.form.submit()">
-                            </form>
-                        </div>
-                        
-                        <div class="col-md-2">
-                            <p class="fw-bold text-success mb-0">${{ "%.2f"|format(item.precio * item.cantidad) }}</p>
-                            <small class="text-muted">${{ "%.2f"|format(item.precio) }} c/u</small>
-                        </div>
-                        
-                        <div class="col-md-1 text-end">
-                            <a href="{{ url_for('quitar_carrito', producto_id=item.producto_id, talla=item.talla) }}" 
-                               class="btn btn-danger btn-sm rounded-circle"
-                               onclick="return confirm('¿Eliminar este producto del carrito?')">
-                                ✕
-                            </a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
+  <h2 class="mb-4">🛒 Mi Carrito</h2>
+
+  {% if carrito.total_items == 0 %}
+  <div class="alert alert-info text-center shadow-sm">
+    <h4>Tu carrito está vacío 😢</h4>
+    <p class="mb-3">
+      ¡Explora nuestra tienda y encuentra los tenis que más te gustan!
+    </p>
+    <a
+      href="{{ url_for('tienda_T') }}"
+      class="btn btn-primary rounded-pill px-4"
+    >
+      Ir a la tienda 🛍️
+    </a>
+  </div>
+  {% else %}
+
+  <div class="row">
+    <!-- Lista de productos -->
+    <div class="col-md-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Productos agregados</h5>
+
+          {% for item in carrito.get('items', []) %}
+          <div class="row mb-4 pb-3 border-bottom align-items-center">
+            <div class="col-md-2">
+              <img
+                src="{{ item.imagen }}"
+                class="img-fluid rounded"
+                style="height: 80px; width: 80px; object-fit: cover"
+                onerror="this.src = 'https://via.placeholder.com/80'"
+              />
             </div>
-        </div>
-        
-        <!-- Resumen del pedido -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Resumen del pedido</h5>
-                    <hr>
-                    
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Subtotal:</span>
-                        <span>${{ "%.2f"|format(carrito.total_precio) }}</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Envío:</span>
-                        <span class="text-success">Gratis 🎉</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Productos:</span>
-                        <span>{{ carrito.total_items }} unidades</span>
-                    </div>
-                    
-                    <hr>
-                    
-                    <div class="d-flex justify-content-between mb-3">
-                        <strong class="fs-5">Total:</strong>
-                        <strong class="text-success fs-4">${{ "%.2f"|format(carrito.total_precio) }}</strong>
-                    </div>
-                    
-                    <hr>
-                    
-                    <button class="btn btn-success w-100 rounded-pill py-2 mb-2" 
-                            onclick="alert('Próximamente - Sistema de pagos 🚧')">
-                        💳 Proceder al pago
-                    </button>
-                    
-                    <a href="{{ url_for('tienda_T') }}" class="btn btn-outline-secondary w-100 rounded-pill">
-                        🛍️ Seguir comprando
-                    </a>
-                    
-                    <hr>
-                    <div class="text-center">
-                        <small class="text-muted">
-                            ✅ Aceptamos todas las tarjetas<br>
-                            🔒 Compra segura
-                        </small>
-                    </div>
-                </div>
+
+            <div class="col-md-4">
+              <h6 class="fw-bold mb-1">{{ item.nombre }}</h6>
+              <p class="text-muted small mb-0">{{ item.marca }}</p>
+              <span class="badge bg-secondary">Talla: {{ item.talla }}</span>
             </div>
+
+            <div class="col-md-3">
+              <form
+                method="POST"
+                action="{{ url_for('actualizar_carrito') }}"
+                class="d-flex align-items-center"
+              >
+                <input
+                  type="hidden"
+                  name="producto_id"
+                  value="{{ item.producto_id }}"
+                />
+                <input type="hidden" name="talla" value="{{ item.talla }}" />
+                <label class="me-2 small">Cant:</label>
+                <input
+                  type="number"
+                  name="cantidad"
+                  value="{{ item.cantidad }}"
+                  min="1"
+                  max="{{ item.stock if item.stock is defined else item.cantidad }}"
+                  class="form-control form-control-sm w-50"
+                  onchange="this.form.submit()"
+                />
+                <small class="text-muted ms-2">
+                  Max: {{ item.stock if item.stock is defined else item.cantidad
+                  }}
+                </small>
+              </form>
+            </div>
+
+            <div class="col-md-2">
+              <p class="fw-bold text-success mb-0">
+                ${{ "%.2f"|format(item.precio * item.cantidad) }}
+              </p>
+              <small class="text-muted"
+                >${{ "%.2f"|format(item.precio) }} c/u</small
+              >
+            </div>
+
+            <div class="col-md-1 text-end">
+              <a
+                href="{{ url_for('quitar_carrito', producto_id=item.producto_id, talla=item.talla) }}"
+                class="btn btn-danger btn-sm rounded-circle"
+                onclick="
+                  return confirm('¿Eliminar este producto del carrito?');
+                "
+              >
+                ✕
+              </a>
+            </div>
+          </div>
+          {% endfor %}
         </div>
+      </div>
     </div>
-    {% endif %}
+
+    <!-- Resumen del pedido -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 sticky-top" style="top: 20px">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Resumen del pedido</h5>
+          <hr />
+
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal:</span>
+            <span>${{ "%.2f"|format(carrito.total_precio) }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between mb-2">
+            <span>Envío:</span>
+            <span class="text-success">Gratis 🎉</span>
+          </div>
+
+          <div class="d-flex justify-content-between mb-2">
+            <span>Productos:</span>
+            <span>{{ carrito.total_items }} unidades</span>
+          </div>
+
+          <hr />
+
+          <div class="d-flex justify-content-between mb-3">
+            <strong class="fs-5">Total:</strong>
+            <strong class="text-success fs-4"
+              >${{ "%.2f"|format(carrito.total_precio) }}</strong
+            >
+          </div>
+
+          <hr />
+
+          <button
+            class="btn btn-success w-100 rounded-pill py-2 mb-2"
+            onclick="alert('Próximamente - Sistema de pagos 🚧')"
+          >
+            💳 Proceder al pago
+          </button>
+
+          <a
+            href="{{ url_for('tienda_T') }}"
+            class="btn btn-outline-secondary w-100 rounded-pill"
+          >
+            🛍️ Seguir comprando
+          </a>
+
+          <hr />
+          <div class="text-center">
+            <small class="text-muted">
+              ✅ Aceptamos todas las tarjetas<br />
+              🔒 Compra segura
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
 
 {% endblock %}

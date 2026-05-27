@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 from bson.objectid import ObjectId
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "1029300192"
@@ -92,7 +93,10 @@ def tienda_T():
 
     marcas = request.args.getlist("marca")
     condiciones = request.args.getlist("condicion")
+    colores = request.args.getlist("color")
     busqueda = request.args.get("buscar", "").strip()
+    precio_min = request.args.get("precio_min", "").strip()
+    precio_max = request.args.get("precio_max", "").strip()
 
     filtros = {"activo": True}
 
@@ -101,6 +105,22 @@ def tienda_T():
 
     if condiciones:
         filtros["condicion"] = {"$in": condiciones}
+
+    if colores:
+        filtros["color"] = {"$in": colores}
+
+    if precio_min or precio_max:
+        filtros["precio"] = {}
+        if precio_min:
+            try:
+                filtros["precio"]["$gte"] = float(precio_min)
+            except:
+                pass
+        if precio_max:
+            try:
+                filtros["precio"]["$lte"] = float(precio_max)
+            except:
+                pass
 
     if busqueda:
         patrón = {"$regex": busqueda, "$options": "i"}
@@ -118,6 +138,38 @@ def tienda_T():
         "tienda.html",
         productos=productos
     )
+    
+@app.route("/eliminar_producto/<producto_id>", methods=["POST"])
+def eliminar_producto(producto_id):
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    producto = tienda.productos.find_one({
+        "_id": ObjectId(producto_id),
+        "activo": True
+    })
+
+    if not producto:
+        flash("El producto no existe", "danger")
+        return redirect(url_for("tienda_T"))
+
+    if str(producto["id_vendedor"]) != session["usuario_id"]:
+        flash("No puedes eliminar una publicación que no es tuya", "danger")
+        return redirect(url_for("tienda_T"))
+
+    tienda.productos.update_one(
+        {"_id": ObjectId(producto_id)},
+        {
+            "$set": {
+                "activo": False,
+                "fecha_eliminacion": datetime.now()
+            }
+        }
+    )
+
+    flash("Publicación eliminada correctamente", "success")
+    return redirect(url_for("tienda_T"))
 
 
 @app.route("/perfil")
@@ -254,6 +306,65 @@ def agregar_producto():
         return redirect(url_for("agregar_producto"))
 
     return render_template("agregar_producto.html")
+
+@app.route("/editar_producto/<producto_id>", methods=["GET", "POST"])
+def editar_producto(producto_id):
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    producto = tienda.productos.find_one({
+        "_id": ObjectId(producto_id),
+        "activo": True
+    })
+
+    if not producto:
+        flash("El producto no existe", "danger")
+        return redirect(url_for("tienda_T"))
+
+    if str(producto["id_vendedor"]) != session["usuario_id"]:
+        flash("No puedes editar una publicación que no es tuya", "danger")
+        return redirect(url_for("tienda_T"))
+
+    if request.method == "POST":
+
+        nombre = request.form["nombre"]
+        marca = request.form["marca"]
+        modelo = request.form["modelo"]
+        tipo = request.form["tipo"]
+        color = request.form["color"]
+        talla = int(request.form["talla"])
+        precio = float(request.form["precio"])
+        condicion = request.form["condicion"]
+        stock = int(request.form["stock"])
+        imagen = request.form["imagen"]
+
+        tienda.productos.update_one(
+            {"_id": ObjectId(producto_id)},
+            {
+                "$set": {
+                    "nombre": nombre,
+                    "marca": marca,
+                    "modelo": modelo,
+                    "tipo": tipo,
+                    "color": color,
+                    "talla": talla,
+                    "precio": precio,
+                    "condicion": condicion,
+                    "stock": stock,
+                    "imagen": imagen,
+                    "fecha_actualizacion": datetime.now()
+                }
+            }
+        )
+
+        flash("Publicación actualizada correctamente", "success")
+        return redirect(url_for("tienda_T"))
+
+    producto["_id"] = str(producto["_id"])
+    producto["id_vendedor"] = str(producto["id_vendedor"])
+
+    return render_template("editar_producto.html", producto=producto)
 
 @app.route("/recuperar", methods=["GET", "POST"])
 def recuperar():
