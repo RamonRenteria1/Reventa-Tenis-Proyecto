@@ -240,44 +240,36 @@ def acerca():
 
 @app.route("/agregar_producto", methods=["GET", "POST"])
 def agregar_producto():
-
     if "usuario_id" not in session:
         return redirect(url_for("login"))
 
     if session["tipo"] != "vendedor":
-
-        flash(
-            "Solo los vendedores pueden agregar modelos",
-            "warning"
-        )
-
         return redirect(url_for("tienda_T"))
 
     if request.method == "POST":
+        nombre = request.form.get("nombre", "").strip()
+        marca = request.form.get("marca", "").strip()
+        tipo = request.form.get("tipo", "").strip()
+        color = request.form.get("color", "").strip()
+        talla_raw = request.form.get("talla", "").strip()
+        stock_raw = request.form.get("stock", "").strip()
+        precio_raw = request.form.get("precio", "").strip()
+        condicion = request.form.get("condicion", "").strip()
+        imagen = request.form.get("imagen", "").strip()
 
-        nombre = request.form["nombre"]
+        if not all([nombre, marca, tipo, color, talla_raw, stock_raw, precio_raw, condicion, imagen]):
+            return redirect(url_for("agregar_producto"))
 
-        marca = request.form["marca"]
-
-        tipo = request.form["tipo"]
-
-        color = request.form["color"]
-
-        talla = int(request.form["talla"])
-
-        stock = int(request.form["stock"])
-
-        precio = float(request.form["precio"])
-
-        condicion = request.form["condicion"]
-
-        imagen = request.form["imagen"]
+        try:
+            talla = int(talla_raw)
+            stock = int(stock_raw)
+            precio = float(precio_raw)
+        except ValueError:
+            return redirect(url_for("agregar_producto"))
 
         producto_id = tienda.agregar_producto(
-
             nombre,
             marca,
-            nombre,
             tipo,
             color,
             talla,
@@ -286,22 +278,10 @@ def agregar_producto():
             stock,
             session["usuario_id"],
             imagen
-
         )
 
         if producto_id:
-
-            flash(
-                "Modelo publicado correctamente",
-                "success"
-            )
-
             return redirect(url_for("tienda_T"))
-
-        flash(
-            "Error al publicar el modelo",
-            "danger"
-        )
 
         return redirect(url_for("agregar_producto"))
 

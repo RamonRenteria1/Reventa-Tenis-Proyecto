@@ -155,6 +155,7 @@
                             </label>
 
                             <input type="number"
+                                   step="0.01"
                                    name="precio"
                                    class="form-control"
                                    placeholder="3200"
@@ -198,21 +199,37 @@
                                 URL de la Imagen
                             </label>
 
-                            <input type="text"
-                                   name="imagen"
-                                   class="form-control"
-                                   placeholder="https://imagen.com/tenis.jpg">
+                            <input type="url"
+                                name="imagen"
+                                class="form-control"
+                                placeholder="https://imagen.com/tenis.jpg"
+                                required>
 
                         </div>
 
                     </div>
 
-                    <button type="submit"
-                            class="btn btn-dark w-100 rounded-pill py-2 fw-bold">
+                    <div class="row g-2">
 
-                        Publicar Modelo
+                        <div class="col-md-6">
 
-                    </button>
+                            <a href="{{ url_for('tienda_T') }}"
+                            class="btn btn-outline-secondary w-100 rounded-pill py-2 fw-bold">
+                                Cancelar
+                            </a>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <button type="submit"
+                                    class="btn btn-dark w-100 rounded-pill py-2 fw-bold">
+                                Publicar Modelo
+                            </button>
+
+                        </div>
+
+                    </div>
 
                 </form>
 
