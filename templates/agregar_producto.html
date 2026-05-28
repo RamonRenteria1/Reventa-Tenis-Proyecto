@@ -8,7 +8,7 @@
 
     <div class="col-lg-8">
 
-        <div class="card shadow-lg border-0 border-top border-success border-4">
+        <div class="card shadow-lg border-0 border-top border-warning border-4">
 
             <div class="card-body p-4">
 
@@ -26,11 +26,8 @@
                                 Modelo
                             </label>
 
-                            <input type="text"
-                                   name="nombre"
-                                   class="form-control"
-                                   placeholder="Nike Dunk Low Panda"
-                                   required>
+                            <input type="text" name="nombre" class="form-control" placeholder="Nike Dunk Low Panda"
+                                required>
 
                         </div>
 
@@ -40,9 +37,7 @@
                                 Marca
                             </label>
 
-                            <select name="marca"
-                                    class="form-select"
-                                    required>
+                            <select name="marca" class="form-select" required>
 
                                 <option value="">
                                     Selecciona una marca
@@ -78,9 +73,7 @@
                                 Tipo
                             </label>
 
-                            <select name="tipo"
-                                    class="form-select"
-                                    required>
+                            <select name="tipo" class="form-select" required>
 
                                 <option value="">
                                     Selecciona un tipo
@@ -108,11 +101,7 @@
                                 Color
                             </label>
 
-                            <input type="text"
-                                   name="color"
-                                   class="form-control"
-                                   placeholder="Blanco y negro"
-                                   required>
+                            <input type="text" name="color" class="form-control" placeholder="Blanco y negro" required>
 
                         </div>
 
@@ -126,11 +115,7 @@
                                 Talla
                             </label>
 
-                            <input type="number"
-                                   name="talla"
-                                   class="form-control"
-                                   placeholder="27"
-                                   required>
+                            <input type="number" name="talla" class="form-control" placeholder="27" required>
 
                         </div>
 
@@ -140,11 +125,7 @@
                                 Stock
                             </label>
 
-                            <input type="number"
-                                   name="stock"
-                                   class="form-control"
-                                   placeholder="1"
-                                   required>
+                            <input type="number" name="stock" class="form-control" placeholder="1" required>
 
                         </div>
 
@@ -154,12 +135,8 @@
                                 Precio
                             </label>
 
-                            <input type="number"
-                                   step="0.01"
-                                   name="precio"
-                                   class="form-control"
-                                   placeholder="3200"
-                                   required>
+                            <input type="number" step="0.01" name="precio" class="form-control" placeholder="3200"
+                                required>
 
                         </div>
 
@@ -173,9 +150,7 @@
                                 Condición
                             </label>
 
-                            <select name="condicion"
-                                    class="form-select"
-                                    required>
+                            <select name="condicion" class="form-select" required>
 
                                 <option value="">
                                     Selecciona una condición
@@ -199,11 +174,8 @@
                                 URL de la Imagen
                             </label>
 
-                            <input type="url"
-                                name="imagen"
-                                class="form-control"
-                                placeholder="https://imagen.com/tenis.jpg"
-                                required>
+                            <input type="url" name="imagen" class="form-control"
+                                placeholder="https://imagen.com/tenis.jpg" required>
 
                         </div>
 
@@ -214,7 +186,7 @@
                         <div class="col-md-6">
 
                             <a href="{{ url_for('tienda_T') }}"
-                            class="btn btn-outline-secondary w-100 rounded-pill py-2 fw-bold">
+                                class="btn btn-outline-secondary w-100 rounded-pill py-2 fw-bold">
                                 Cancelar
                             </a>
 
@@ -222,8 +194,7 @@
 
                         <div class="col-md-6">
 
-                            <button type="submit"
-                                    class="btn btn-dark w-100 rounded-pill py-2 fw-bold">
+                            <button type="submit" class="btn btn-dark w-100 rounded-pill py-2 fw-bold">
                                 Publicar Modelo
                             </button>
 

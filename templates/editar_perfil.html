@@ -5,24 +5,131 @@
 {% block content %}
 
 <div class="row justify-content-center">
-    <div class="col-lg-6">
-        <div class="card shadow-sm p-4">
-            <h4 class="mb-4">Editar perfil</h4>
+    <div class="col-lg-7">
+
+        <div class="card shadow-sm border-0 p-4">
+
+            <h4 class="fw-bold mb-1">
+                Editar perfil
+            </h4>
+
+            <p class="text-muted mb-4">
+                Actualiza tu información de usuario.
+            </p>
 
             <form method="POST" action="{{ url_for('editar_perfil') }}">
-                <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ usuario.nombre }}" required>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Correo</label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ usuario.email }}" required>
+
+                <div class="text-center mb-4">
+
+                    {% if usuario.foto_perfil %}
+                    <img src="{{ usuario.foto_perfil }}"
+                         class="rounded-circle shadow-sm mb-2"
+                         width="110"
+                         height="110"
+                         style="object-fit: cover;"
+                         onerror="this.src='https://placehold.co/110x110/png?text=Perfil';">
+                    {% else %}
+                    <img src="https://placehold.co/110x110/png?text=Perfil"
+                         class="rounded-circle shadow-sm mb-2"
+                         width="110"
+                         height="110"
+                         style="object-fit: cover;">
+                    {% endif %}
+
+                    <p class="text-muted small mb-0">
+                        Vista previa de tu foto
+                    </p>
+
                 </div>
 
-                <button type="submit" class="btn btn-filter">Guardar cambios</button>
-                <a href="{{ url_for('perfil') }}" class="btn btn-outline-secondary ms-2">Cancelar</a>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label fw-bold small text-muted">
+                        Nombre completo
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="nombre"
+                           name="nombre"
+                           value="{{ usuario.nombre }}"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label fw-bold small text-muted">
+                        Nombre de usuario
+                    </label>
+
+                    <div class="input-group">
+                        <span class="input-group-text">@</span>
+
+                        <input type="text"
+                               class="form-control"
+                               id="username"
+                               name="username"
+                               value="{{ usuario.username if usuario.username else '' }}"
+                               placeholder="ramonr"
+                               required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-bold small text-muted">
+                        Correo
+                    </label>
+
+                    <input type="email"
+                           class="form-control"
+                           id="email"
+                           name="email"
+                           value="{{ usuario.email }}"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="telefono" class="form-label fw-bold small text-muted">
+                        Teléfono
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="telefono"
+                           name="telefono"
+                           value="{{ usuario.telefono if usuario.telefono else '' }}"
+                           placeholder="6560000000">
+                </div>
+
+                <div class="mb-4">
+                    <label for="foto_perfil" class="form-label fw-bold small text-muted">
+                        Foto de perfil URL
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="foto_perfil"
+                           name="foto_perfil"
+                           value="{{ usuario.foto_perfil if usuario.foto_perfil else '' }}"
+                           placeholder="https://...">
+                </div>
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-filter w-100 rounded-pill fw-bold">
+                        Guardar cambios
+                    </button>
+
+                    <a href="{{ url_for('perfil') }}"
+                       class="btn btn-outline-secondary w-100 rounded-pill">
+                        Cancelar
+                    </a>
+
+                </div>
+
             </form>
+
         </div>
+
     </div>
 </div>
 

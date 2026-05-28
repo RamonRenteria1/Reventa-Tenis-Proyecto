@@ -23,11 +23,8 @@
                             Nombre Completo
                         </label>
 
-                        <input type="text"
-                               name="nombre"
-                               class="form-control border-secondary-subtle"
-                               placeholder="Ej. Ramón Rentería"
-                               required>
+                        <input type="text" name="nombre" class="form-control border-secondary-subtle"
+                            placeholder="Ej. Ramón Rentería" required>
                     </div>
 
                     <div class="mb-3">
@@ -35,11 +32,38 @@
                             Correo Electrónico
                         </label>
 
-                        <input type="email"
-                               name="email"
-                               class="form-control border-secondary-subtle"
-                               placeholder="nombre@correo.com"
-                               required>
+                        <input type="email" name="email" class="form-control border-secondary-subtle"
+                            placeholder="nombre@correo.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">
+                            Nombre de usuario
+                        </label>
+
+                        <div class="input-group">
+                            <span class="input-group-text">@</span>
+                            <input type="text" name="username" class="form-control border-secondary-subtle"
+                                placeholder="ramonr" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">
+                            Teléfono
+                        </label>
+
+                        <input type="text" name="telefono" class="form-control border-secondary-subtle"
+                            placeholder="6560000000">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">
+                            Foto de perfil URL
+                        </label>
+
+                        <input type="text" name="foto_perfil" class="form-control border-secondary-subtle"
+                            placeholder="https://...">
                     </div>
 
                     <div class="row">
@@ -49,11 +73,8 @@
                                 Contraseña
                             </label>
 
-                            <input type="password"
-                                   name="password"
-                                   class="form-control border-secondary-subtle"
-                                   placeholder="••••••••"
-                                   required>
+                            <input type="password" name="password" class="form-control border-secondary-subtle"
+                                placeholder="••••••••" required>
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -61,11 +82,8 @@
                                 Confirmar Contraseña
                             </label>
 
-                            <input type="password"
-                                   name="confirmar_password"
-                                   class="form-control border-secondary-subtle"
-                                   placeholder="••••••••"
-                                   required>
+                            <input type="password" name="confirmar_password"
+                                class="form-control border-secondary-subtle" placeholder="••••••••" required>
                         </div>
 
                     </div>
@@ -75,9 +93,7 @@
                             Tipo de Cuenta
                         </label>
 
-                        <select name="tipo"
-                                class="form-select border-secondary-subtle"
-                                required>
+                        <select name="tipo" class="form-select border-secondary-subtle" required>
 
                             <option value="">
                                 Selecciona una opción
@@ -94,8 +110,7 @@
                         </select>
                     </div>
 
-                    <button type="submit"
-                            class="btn btn-dark w-100 rounded-pill fw-bold py-2 border-info">
+                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold py-2 border-info">
                         Registrarme
                     </button>
 
@@ -104,8 +119,7 @@
                 <p class="text-center mt-3 small">
                     ¿Ya tienes cuenta?
 
-                    <a href="{{ url_for('login') }}"
-                       class="text-info fw-bold text-decoration-none">
+                    <a href="{{ url_for('login') }}" class="text-info fw-bold text-decoration-none">
                         Inicia sesión aquí
                     </a>
                 </p>

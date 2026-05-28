@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Admin{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- TITULO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-0">
+                Dashboard Administrador
+            </h2>
+
+            <p class="text-muted">
+                Control general de la tienda
+            </p>
+        </div>
+
+        <div>
+            <span class="badge bg-danger fs-6 px-3 py-2">
+                ADMIN
+            </span>
+        </div>
+
+    </div>
+
+    <!-- TARJETAS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Usuarios registrados
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{ total_usuarios }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Productos activos
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{ total_productos }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Carritos creados
+                    </h6>
+
+                    <h2 class="fw-bold">
+                        {{ total_carritos }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- USUARIOS -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Usuarios Registrados
+            </h5>
+
+        </div>
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for usuario in usuarios %}
+
+                    <tr>
+
+                        <td class="fw-semibold">
+                            {{ usuario.nombre }}
+                        </td>
+
+                        <td>
+                            {{ usuario.email }}
+                        </td>
+
+                        <td>
+
+                            {% if usuario.tipo == "admin" %}
+                            <span class="badge bg-danger">
+                                Admin
+                            </span>
+
+                            {% elif usuario.tipo == "vendedor" %}
+                            <span class="badge bg-primary">
+                                Vendedor
+                            </span>
+
+                            {% else %}
+                            <span class="badge bg-secondary">
+                                Comprador
+                            </span>
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if usuario.activo %}
+                            <span class="badge bg-success">
+                                Activo
+                            </span>
+                            {% else %}
+                            <span class="badge bg-danger">
+                                Inactivo
+                            </span>
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- PRODUCTOS -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+                Productos Publicados
+            </h5>
+
+        </div>
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Producto</th>
+                        <th>Marca</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for producto in productos %}
+
+                    <tr>
+
+                        <td>
+
+                            <img src="{{ producto.imagen }}"
+                                 width="70"
+                                 height="70"
+                                 class="rounded object-fit-cover"
+                                 style="object-fit: cover;"
+                                 onerror="this.src='https://placehold.co/70x70/png?text=IMG';">
+
+                        </td>
+
+                        <td class="fw-semibold">
+                            {{ producto.nombre }}
+                        </td>
+
+                        <td>
+                            {{ producto.marca }}
+                        </td>
+
+                        <td class="text-success fw-bold">
+                            ${{ producto.precio }}
+                        </td>
+
+                        <td>
+                            {{ producto.stock }}
+                        </td>
+
+                        <td>
+
+                            {% if producto.activo %}
+                            <span class="badge bg-success">
+                                Activo
+                            </span>
+                            {% else %}
+                            <span class="badge bg-danger">
+                                Eliminado
+                            </span>
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

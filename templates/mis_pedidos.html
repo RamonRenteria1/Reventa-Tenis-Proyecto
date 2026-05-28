@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Mis pedidos{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="fw-bold mb-1">
+        Mis pedidos
+    </h2>
+
+    <p class="text-muted mb-4">
+        Historial de compras realizadas.
+    </p>
+
+    {% if pedidos %}
+
+    {% for pedido in pedidos %}
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-dark text-white d-flex justify-content-between">
+            <span>
+                Pedido #{{ pedido._id[-6:] }}
+            </span>
+
+            <span>
+                {{ pedido.estado }}
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            <p class="mb-1">
+                <strong>Dirección:</strong> {{ pedido.direccion }}
+            </p>
+
+            <p class="mb-1">
+                <strong>Teléfono:</strong> {{ pedido.telefono }}
+            </p>
+
+            <p class="mb-3">
+                <strong>Método de pago:</strong> {{ pedido.metodo_pago }}
+            </p>
+
+            {% for item in pedido["items"] %}
+
+            <div class="d-flex justify-content-between border-bottom py-2">
+                <div>
+                    <strong>{{ item.nombre }}</strong>
+                    <br>
+                    <small class="text-muted">
+                        Talla {{ item.talla }} | Cantidad {{ item.cantidad }}
+                    </small>
+                </div>
+
+                <span class="text-success fw-bold">
+                    ${{ "%.2f"|format(item.precio * item.cantidad) }}
+                </span>
+            </div>
+
+            {% endfor %}
+
+            <div class="d-flex justify-content-between mt-3">
+                <strong>Total:</strong>
+
+                <strong class="text-success">
+                    ${{ "%.2f"|format(pedido.total_precio) }}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+    {% else %}
+
+    <div class="card shadow-sm border-0 p-5 text-center">
+        <h4 class="fw-bold">
+            Aún no tienes pedidos
+        </h4>
+
+        <p class="text-muted">
+            Cuando confirmes una compra aparecerá aquí.
+        </p>
+
+        <a href="{{ url_for('tienda_T') }}"
+           class="btn btn-primary rounded-pill px-4">
+            Ir a la tienda
+        </a>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

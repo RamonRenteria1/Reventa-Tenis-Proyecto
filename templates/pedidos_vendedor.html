@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Pedidos Recibidos{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="fw-bold mb-1">
+        Pedidos recibidos
+    </h2>
+
+    <p class="text-muted mb-4">
+        Aquí aparecen los productos que te han comprado.
+    </p>
+
+    {% if pedidos %}
+
+    {% for pedido in pedidos %}
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-dark text-white d-flex justify-content-between flex-wrap gap-2">
+            <span>
+                Pedido #{{ pedido._id[-6:] }}
+            </span>
+
+            <span>
+                Estado: {{ pedido.estado }}
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-4">
+                    <small class="text-muted">Cliente</small>
+                    <p class="fw-bold mb-0">
+                        {{ pedido.nombre_cliente }}
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <small class="text-muted">Teléfono</small>
+                    <p class="mb-0">
+                        {{ pedido.telefono }}
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <small class="text-muted">Pago</small>
+                    <p class="mb-0">
+                        {{ pedido.metodo_pago }}
+                    </p>
+                </div>
+
+            </div>
+
+            <p class="mb-3">
+                <strong>Dirección:</strong> {{ pedido.direccion }}
+            </p>
+
+            <h6 class="fw-bold">
+                Productos vendidos por ti
+            </h6>
+
+            {% for item in pedido["items_vendedor"] %}
+
+            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+
+                <div class="d-flex align-items-center gap-2">
+
+                    <img src="{{ item.imagen }}"
+                         width="55"
+                         height="55"
+                         class="rounded"
+                         style="object-fit: cover;"
+                         onerror="this.src='https://placehold.co/55x55/png?text=IMG';">
+
+                    <div>
+                        <strong>{{ item.nombre }}</strong>
+                        <br>
+                        <small class="text-muted">
+                            Talla {{ item.talla }} | Cantidad {{ item.cantidad }}
+                        </small>
+                    </div>
+
+                </div>
+
+                <span class="text-success fw-bold">
+                    ${{ "%.2f"|format(item.precio * item.cantidad) }}
+                </span>
+
+            </div>
+
+            {% endfor %}
+
+            <div class="d-flex justify-content-between mt-3">
+                <strong>Total de tus productos:</strong>
+
+                <strong class="text-success">
+                    ${{ "%.2f"|format(pedido.total_vendedor) }}
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+    {% else %}
+
+    <div class="card shadow-sm border-0 p-5 text-center">
+        <h4 class="fw-bold">
+            Todavía no tienes pedidos
+        </h4>
+
+        <p class="text-muted">
+            Cuando alguien compre uno de tus tenis, aparecerá aquí.
+        </p>
+
+        <a href="{{ url_for('mis_publicaciones') }}"
+           class="btn btn-primary rounded-pill px-4">
+            Ver mis publicaciones
+        </a>
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

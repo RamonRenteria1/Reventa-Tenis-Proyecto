@@ -24,6 +24,7 @@ class TiendaTenis:
             self.usuarios = self.db["usuarios"]
             self.productos = self.db["productos"]
             self.carritos = self.db["carritos"]
+            self.pedidos = self.db["pedidos"]
 
             self._crear_indices()
 
@@ -43,13 +44,18 @@ class TiendaTenis:
         self.productos.create_index("talla")
         self.productos.create_index("activo")
         self.carritos.create_index("usuario_id", unique=True)
+        self.pedidos.create_index("usuario_id")
+        self.pedidos.create_index("fecha_pedido")
 
     def crear_usuario(
         self,
         nombre: str,
         email: str,
         password: str,
-        tipo: str
+        tipo: str,
+        username: str = "",
+        foto_perfil: str = "",
+        telefono: str = ""
     ) -> Optional[str]:
         """Crear un nuevo usuario comprador o vendedor"""
 
@@ -58,9 +64,12 @@ class TiendaTenis:
 
             resultado = self.usuarios.insert_one({
                 "nombre": nombre,
+                "username": username,
                 "email": email,
                 "password": password_encriptada,
                 "tipo": tipo,
+                "foto_perfil": foto_perfil,
+                "telefono": telefono,
                 "fecha_registro": datetime.now(),
                 "activo": True
             })
@@ -68,7 +77,7 @@ class TiendaTenis:
             return str(resultado.inserted_id)
 
         except DuplicateKeyError:
-            print(f"❌ Error: El email {email} ya está registrado")
+            print("❌ Error: usuario o correo ya registrado")
             return None
 
         except Exception as e:
@@ -274,13 +283,10 @@ class TiendaTenis:
 
         return carrito
 
-    def agregar_al_carrito(
-        self,
-        usuario_id: str,
-        producto_id: str,
-        talla: int,
-        cantidad: int = 1
-    ):
+    def agregar_al_carrito(self, usuario_id: str, producto_id: str, talla: int, cantidad: int = 1) -> bool:
+        if cantidad <= 0:
+            return False
+
         producto = self.productos.find_one({
             "_id": ObjectId(producto_id),
             "activo": True
@@ -291,11 +297,13 @@ class TiendaTenis:
 
         stock_disponible = int(producto.get("stock", 0))
 
-        if stock_disponible <= 0:
+        if stock_disponible < cantidad:
             return False
 
-        if cantidad <= 0:
-            return False
+        self.productos.update_one(
+            {"_id": ObjectId(producto_id)},
+            {"$inc": {"stock": -cantidad}}
+        )
 
         carrito = self.obtener_carrito(usuario_id)
 
@@ -306,14 +314,8 @@ class TiendaTenis:
                 item_existente = item
                 break
 
-        cantidad_actual = item_existente["cantidad"] if item_existente else 0
-
-        if cantidad_actual + cantidad > stock_disponible:
-            return False
-
         if item_existente:
             item_existente["cantidad"] += cantidad
-            item_existente["stock"] = stock_disponible
         else:
             carrito["items"].append({
                 "producto_id": producto_id,
@@ -323,15 +325,11 @@ class TiendaTenis:
                 "cantidad": cantidad,
                 "precio": producto["precio"],
                 "imagen": producto.get("imagen", ""),
-                "vendedor_id": str(producto["id_vendedor"]),
-                "stock": stock_disponible
+                "vendedor_id": str(producto["id_vendedor"])
             })
 
         total_items = sum(item["cantidad"] for item in carrito["items"])
-        total_precio = sum(
-            item["cantidad"] * item["precio"]
-            for item in carrito["items"]
-        )
+        total_precio = sum(item["cantidad"] * item["precio"] for item in carrito["items"])
 
         self.carritos.update_one(
             {"usuario_id": usuario_id},
@@ -347,83 +345,83 @@ class TiendaTenis:
 
         return True
 
-    def quitar_del_carrito(self, usuario_id: str, producto_id: str, talla: int):
-        """Elimina un item específico del carrito"""
+    def quitar_del_carrito(self, usuario_id: str, producto_id: str, talla: int) -> bool:
 
-        result = self.carritos.update_one(
+        carrito = self.obtener_carrito(usuario_id)
+
+        item_eliminado = None
+
+        for item in carrito["items"]:
+            if item["producto_id"] == producto_id and item["talla"] == talla:
+                item_eliminado = item
+                break
+
+        if not item_eliminado:
+            return False
+
+        self.productos.update_one(
+            {"_id": ObjectId(producto_id)},
+            {"$inc": {"stock": item_eliminado["cantidad"]}}
+        )
+
+        carrito["items"] = [
+            item for item in carrito["items"]
+            if not (item["producto_id"] == producto_id and item["talla"] == talla)
+        ]
+
+        total_items = sum(item["cantidad"] for item in carrito["items"])
+        total_precio = sum(item["cantidad"] * item["precio"] for item in carrito["items"])
+
+        self.carritos.update_one(
             {"usuario_id": usuario_id},
             {
-                "$pull": {
-                    "items": {
-                        "producto_id": producto_id,
-                        "talla": talla
-                    }
+                "$set": {
+                    "items": carrito["items"],
+                    "total_items": total_items,
+                    "total_precio": total_precio,
+                    "updated_at": datetime.now()
                 }
             }
         )
 
-        if result.modified_count > 0:
-            carrito = self.obtener_carrito(usuario_id)
+        return True
 
-            total_items = sum(item["cantidad"] for item in carrito["items"])
-            total_precio = sum(
-                item["cantidad"] * item["precio"]
-                for item in carrito["items"]
-            )
-
-            self.carritos.update_one(
-                {"usuario_id": usuario_id},
-                {
-                    "$set": {
-                        "total_items": total_items,
-                        "total_precio": total_precio,
-                        "updated_at": datetime.now()
-                    }
-                }
-            )
-
-            return True
-
-        return False
-
-    def actualizar_cantidad(
-        self,
-        usuario_id: str,
-        producto_id: str,
-        talla: int,
-        cantidad: int
-    ):
-        """Actualiza la cantidad de un producto en el carrito"""
+    def actualizar_cantidad(self, usuario_id: str, producto_id: str, talla: int, cantidad: int) -> bool:
 
         if cantidad <= 0:
             return self.quitar_del_carrito(usuario_id, producto_id, talla)
 
-        producto = self.productos.find_one({
-            "_id": ObjectId(producto_id),
-            "activo": True
-        })
-
-        if not producto:
-            return False
-
-        stock_disponible = int(producto.get("stock", 0))
-
-        if cantidad > stock_disponible:
-            return False
-
         carrito = self.obtener_carrito(usuario_id)
+
+        item_existente = None
 
         for item in carrito["items"]:
             if item["producto_id"] == producto_id and item["talla"] == talla:
-                item["cantidad"] = cantidad
-                item["stock"] = stock_disponible
+                item_existente = item
                 break
 
+        if not item_existente:
+            return False
+
+        cantidad_actual = item_existente["cantidad"]
+        diferencia = cantidad - cantidad_actual
+
+        producto = self.productos.find_one({"_id": ObjectId(producto_id)})
+        stock_disponible = int(producto.get("stock", 0)) if producto else 0
+
+        if diferencia > 0 and stock_disponible < diferencia:
+            return False
+
+        if diferencia != 0:
+            self.productos.update_one(
+                {"_id": ObjectId(producto_id)},
+                {"$inc": {"stock": -diferencia}}
+            )
+
+        item_existente["cantidad"] = cantidad
+
         total_items = sum(item["cantidad"] for item in carrito["items"])
-        total_precio = sum(
-            item["cantidad"] * item["precio"]
-            for item in carrito["items"]
-        )
+        total_precio = sum(item["cantidad"] * item["precio"] for item in carrito["items"])
 
         self.carritos.update_one(
             {"usuario_id": usuario_id},

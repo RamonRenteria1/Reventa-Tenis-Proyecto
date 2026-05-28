@@ -44,6 +44,8 @@ def login():
 
         session["usuario_id"] = str(usuario["_id"])
         session["nombre"] = usuario["nombre"]
+        session["username"] = usuario.get("username", "usuario")
+        session["foto_perfil"] = usuario.get("foto_perfil", "")
         session["tipo"] = usuario["tipo"]
 
         flash("Bienvenido", "success")
@@ -57,10 +59,14 @@ def registro():
     if request.method == "POST":
 
         nombre = request.form["nombre"]
+        username = request.form["username"]
         email = request.form["email"]
+        telefono = request.form.get("telefono", "")
+        foto_perfil = request.form.get("foto_perfil", "")
 
         password_original = request.form["password"]
         confirmar_password = request.form["confirmar_password"]
+        tipo = request.form["tipo"]
 
         if password_original != confirmar_password:
             flash("Las contraseñas no coinciden", "danger")
@@ -69,12 +75,14 @@ def registro():
         tipo = request.form["tipo"]
 
         usuario_id = tienda.crear_usuario(
-            nombre,
-            email,
-            password_original,  
-            tipo
-        )
-
+        nombre,
+        email,
+    password_original,
+    tipo,
+    username,
+    foto_perfil,
+    telefono
+)
         if not usuario_id:
             flash("El usuario ya existe", "danger")
             return redirect(url_for("registro"))
@@ -111,11 +119,13 @@ def tienda_T():
 
     if precio_min or precio_max:
         filtros["precio"] = {}
+
         if precio_min:
             try:
                 filtros["precio"]["$gte"] = float(precio_min)
             except:
                 pass
+
         if precio_max:
             try:
                 filtros["precio"]["$lte"] = float(precio_max)
@@ -124,6 +134,7 @@ def tienda_T():
 
     if busqueda:
         patrón = {"$regex": busqueda, "$options": "i"}
+
         filtros["$or"] = [
             {"nombre": patrón},
             {"marca": patrón},
@@ -134,8 +145,55 @@ def tienda_T():
 
     productos = tienda.obtener_productos(filtros)
 
+    for producto in productos:
+        vendedor = tienda.usuarios.find_one({
+            "_id": ObjectId(producto["id_vendedor"])
+        })
+
+        if vendedor:
+            producto["telefono_vendedor"] = vendedor.get("telefono", "")
+            producto["nombre_vendedor"] = vendedor.get("nombre", "Vendedor")
+            producto["username_vendedor"] = vendedor.get("username", "vendedor")
+        else:
+            producto["telefono_vendedor"] = ""
+            producto["nombre_vendedor"] = "Vendedor"
+            producto["username_vendedor"] = "vendedor"
+
     return render_template(
         "tienda.html",
+        productos=productos
+    )
+
+@app.route("/admin")
+def admin_dashboard():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("tipo") != "admin":
+        flash("No tienes permiso para entrar al panel de administrador", "danger")
+        return redirect(url_for("tienda_T"))
+
+    total_usuarios = tienda.usuarios.count_documents({})
+    total_productos = tienda.productos.count_documents({"activo": True})
+    total_carritos = tienda.carritos.count_documents({})
+
+    usuarios = list(tienda.usuarios.find().sort("fecha_registro", -1))
+    productos = list(tienda.productos.find().sort("fecha_publicacion", -1))
+
+    for usuario in usuarios:
+        usuario["_id"] = str(usuario["_id"])
+
+    for producto in productos:
+        producto["_id"] = str(producto["_id"])
+        producto["id_vendedor"] = str(producto["id_vendedor"])
+
+    return render_template(
+        "admin_dashboard.html",
+        total_usuarios=total_usuarios,
+        total_productos=total_productos,
+        total_carritos=total_carritos,
+        usuarios=usuarios,
         productos=productos
     )
     
@@ -202,27 +260,50 @@ def editar_perfil():
 
     if request.method == "POST":
         nombre = request.form["nombre"].strip()
+        username = request.form["username"].strip().lower()
         email = request.form["email"].strip().lower()
+        telefono = request.form.get("telefono", "").strip()
+        foto_perfil = request.form.get("foto_perfil", "").strip()
 
-        if not nombre or not email:
-            flash("Nombre y correo son obligatorios", "warning")
+        if not nombre or not username or not email:
+            flash("Nombre, usuario y correo son obligatorios", "warning")
             return redirect(url_for("editar_perfil"))
 
-        existente = tienda.usuarios.find_one({
+        correo_existente = tienda.usuarios.find_one({
             "email": email,
             "_id": {"$ne": ObjectId(session["usuario_id"])}
         })
 
-        if existente:
+        if correo_existente:
             flash("El correo ya está en uso", "danger")
+            return redirect(url_for("editar_perfil"))
+
+        username_existente = tienda.usuarios.find_one({
+            "username": username,
+            "_id": {"$ne": ObjectId(session["usuario_id"])}
+        })
+
+        if username_existente:
+            flash("Ese nombre de usuario ya está en uso", "danger")
             return redirect(url_for("editar_perfil"))
 
         tienda.usuarios.update_one(
             {"_id": ObjectId(session["usuario_id"])},
-            {"$set": {"nombre": nombre, "email": email}}
+            {
+                "$set": {
+                    "nombre": nombre,
+                    "username": username,
+                    "email": email,
+                    "telefono": telefono,
+                    "foto_perfil": foto_perfil
+                }
+            }
         )
 
         session["nombre"] = nombre
+        session["username"] = username
+        session["foto_perfil"] = foto_perfil
+
         flash("Perfil actualizado correctamente", "success")
         return redirect(url_for("perfil"))
 
@@ -230,7 +311,6 @@ def editar_perfil():
         "editar_perfil.html",
         usuario=usuario
     )
-
 
 @app.route("/acerca")
 def acerca():
@@ -435,7 +515,6 @@ def logout():
 
     return redirect(url_for("login"))
 
-# ============ RUTAS DEL CARRITO ============
 
 @app.route("/carrito")
 def ver_carrito():
@@ -484,7 +563,7 @@ def actualizar_carrito():
     
     return redirect(url_for("ver_carrito"))
 
-# API para el contador del carrito (NECESARIO)
+
 @app.route("/api/carrito/count")
 def api_carrito_count():
     if "usuario_id" not in session:
@@ -493,5 +572,158 @@ def api_carrito_count():
     carrito = tienda.obtener_carrito(session["usuario_id"])
     return {"total_items": carrito["total_items"]}
 
+@app.route("/mis_publicaciones")
+def mis_publicaciones():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("tipo") != "vendedor":
+        flash("Solo los vendedores pueden ver sus publicaciones", "warning")
+        return redirect(url_for("tienda_T"))
+
+    productos = list(tienda.productos.find({
+        "id_vendedor": ObjectId(session["usuario_id"])
+    }).sort("fecha_publicacion", -1))
+
+    total_publicaciones = len(productos)
+    productos_activos = sum(1 for producto in productos if producto.get("activo", True))
+    productos_vendidos = sum(1 for producto in productos if producto.get("stock", 0) <= 0)
+    stock_total = sum(producto.get("stock", 0) for producto in productos if producto.get("activo", True))
+
+    for producto in productos:
+        producto["_id"] = str(producto["_id"])
+        producto["id_vendedor"] = str(producto["id_vendedor"])
+
+    return render_template(
+        "mis_publicaciones.html",
+        productos=productos,
+        total_publicaciones=total_publicaciones,
+        productos_activos=productos_activos,
+        productos_vendidos=productos_vendidos,
+        stock_total=stock_total
+    )
+    
+@app.route("/checkout")
+def checkout():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    carrito = tienda.obtener_carrito(session["usuario_id"])
+
+    if carrito["total_items"] <= 0:
+        flash("Tu carrito está vacío", "warning")
+        return redirect(url_for("ver_carrito"))
+
+    return render_template("checkout.html", carrito=carrito)
+
+
+@app.route("/confirmar_compra", methods=["POST"])
+def confirmar_compra():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    carrito = tienda.obtener_carrito(session["usuario_id"])
+
+    if carrito["total_items"] <= 0:
+        flash("Tu carrito está vacío", "warning")
+        return redirect(url_for("ver_carrito"))
+
+    direccion = request.form["direccion"].strip()
+    telefono = request.form["telefono"].strip()
+    metodo_pago = request.form["metodo_pago"]
+
+    if not direccion or not telefono:
+        flash("Dirección y teléfono son obligatorios", "warning")
+        return redirect(url_for("checkout"))
+
+    pedido = {
+        "usuario_id": session["usuario_id"],
+        "nombre_cliente": session.get("nombre", ""),
+        "items": carrito["items"],
+        "total_items": carrito["total_items"],
+        "total_precio": carrito["total_precio"],
+        "direccion": direccion,
+        "telefono": telefono,
+        "metodo_pago": metodo_pago,
+        "estado": "Confirmado",
+        "fecha_pedido": datetime.now()
+    }
+
+    tienda.pedidos.insert_one(pedido)
+
+    tienda.carritos.update_one(
+        {"usuario_id": session["usuario_id"]},
+        {
+            "$set": {
+                "items": [],
+                "total_items": 0,
+                "total_precio": 0,
+                "updated_at": datetime.now()
+            }
+        }
+    )
+
+    flash("Compra confirmada correctamente", "success")
+    return redirect(url_for("mis_pedidos"))
+
+
+@app.route("/mis_pedidos")
+def mis_pedidos():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    pedidos = list(tienda.pedidos.find({
+        "usuario_id": session["usuario_id"]
+    }).sort("fecha_pedido", -1))
+
+    for pedido in pedidos:
+        pedido["_id"] = str(pedido["_id"])
+
+    return render_template("mis_pedidos.html", pedidos=pedidos)
+
+@app.route("/pedidos_vendedor")
+def pedidos_vendedor():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("tipo") != "vendedor":
+        flash("Solo los vendedores pueden ver sus pedidos", "warning")
+        return redirect(url_for("tienda_T"))
+
+    pedidos = list(tienda.pedidos.find({
+        "items.vendedor_id": session["usuario_id"]
+    }).sort("fecha_pedido", -1))
+
+    pedidos_filtrados = []
+
+    for pedido in pedidos:
+        items_vendedor = []
+
+        for item in pedido.get("items", []):
+            if item.get("vendedor_id") == session["usuario_id"]:
+                items_vendedor.append(item)
+
+        if items_vendedor:
+            total_vendedor = sum(
+                item["precio"] * item["cantidad"]
+                for item in items_vendedor
+            )
+
+            pedido["_id"] = str(pedido["_id"])
+            pedido["items_vendedor"] = items_vendedor
+            pedido["total_vendedor"] = total_vendedor
+
+            pedidos_filtrados.append(pedido)
+
+    return render_template(
+        "pedidos_vendedor.html",
+        pedidos=pedidos_filtrados
+    )
+    
 if __name__ == "__main__":
     app.run(debug=True)

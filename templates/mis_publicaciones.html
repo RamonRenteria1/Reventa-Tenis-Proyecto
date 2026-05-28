@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Publicaciones{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-0">
+                Mis publicaciones
+            </h2>
+
+            <p class="text-muted mb-0">
+                Administra los tenis que has publicado.
+            </p>
+        </div>
+
+        <a href="{{ url_for('agregar_producto') }}"
+           class="btn btn-success rounded-pill fw-bold">
+            + Agregar producto
+        </a>
+
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total publicaciones</p>
+                    <h3 class="fw-bold mb-0">{{ total_publicaciones }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Activas</p>
+                    <h3 class="fw-bold text-success mb-0">{{ productos_activos }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Vendidas / Sold Out</p>
+                    <h3 class="fw-bold text-danger mb-0">{{ productos_vendidos }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Stock total</p>
+                    <h3 class="fw-bold text-primary mb-0">{{ stock_total }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {% if productos %}
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                Productos publicados
+            </h5>
+        </div>
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Producto</th>
+                        <th>Marca</th>
+                        <th>Talla</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for producto in productos %}
+
+                    <tr class="{% if not producto.activo %}table-secondary{% endif %}">
+
+                        <td>
+                            <img src="{{ producto.imagen }}"
+                                 width="70"
+                                 height="70"
+                                 class="rounded"
+                                 style="object-fit: cover;"
+                                 onerror="this.src='https://placehold.co/70x70/png?text=IMG';">
+                        </td>
+
+                        <td class="fw-semibold">
+                            {{ producto.nombre }}
+                        </td>
+
+                        <td>
+                            {{ producto.marca }}
+                        </td>
+
+                        <td>
+                            {{ producto.talla }}
+                        </td>
+
+                        <td class="text-success fw-bold">
+                            ${{ producto.precio }}
+                        </td>
+
+                        <td>
+                            {% if producto.stock <= 0 %}
+                            <span class="badge bg-danger">
+                                SOLD OUT
+                            </span>
+                            {% else %}
+                            <span class="badge bg-primary">
+                                {{ producto.stock }} disponibles
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if not producto.activo %}
+                            <span class="badge bg-secondary">
+                                Eliminado
+                            </span>
+                            {% elif producto.stock <= 0 %}
+                            <span class="badge bg-danger">
+                                Vendido
+                            </span>
+                            {% else %}
+                            <span class="badge bg-success">
+                                Activo
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <div class="d-flex gap-2 flex-wrap">
+
+                                {% if producto.activo %}
+
+                                <a href="{{ url_for('editar_producto', producto_id=producto._id) }}"
+                                   class="btn btn-warning btn-sm rounded-pill">
+                                    Editar
+                                </a>
+
+                                <form method="POST"
+                                      action="{{ url_for('eliminar_producto', producto_id=producto._id) }}"
+                                      onsubmit="return confirm('¿Seguro que quieres eliminar esta publicación?');">
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm rounded-pill">
+                                        Eliminar
+                                    </button>
+
+                                </form>
+
+                                {% else %}
+
+                                <span class="text-muted small">
+                                    Sin acciones
+                                </span>
+
+                                {% endif %}
+
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="card shadow-sm border-0 p-5 text-center">
+
+        <h4 class="fw-bold">
+            Todavía no tienes publicaciones
+        </h4>
+
+        <p class="text-muted">
+            Cuando publiques tenis, aparecerán aquí para que los administres.
+        </p>
+
+        <a href="{{ url_for('agregar_producto') }}"
+           class="btn btn-success rounded-pill px-4">
+            Agregar mi primer producto
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

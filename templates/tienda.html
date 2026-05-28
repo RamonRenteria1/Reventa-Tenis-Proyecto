@@ -17,38 +17,28 @@
 
 <div class="row">
 
-    <!-- FILTROS -->
     <div class="col-md-3 mb-4 filter-panel order-2 order-md-1">
 
-        <button class="btn btn-filter w-100 mb-3 d-md-none"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#filtrosMovil"
-                aria-expanded="false"
-                aria-controls="filtrosMovil">
+        <button class="btn btn-filter w-100 mb-3 d-md-none" type="button" data-bs-toggle="collapse"
+            data-bs-target="#filtrosMovil">
             Mostrar filtros
         </button>
 
         <div class="collapse d-md-block" id="filtrosMovil">
-
             <div class="card shadow-sm border-0">
                 <div class="card-body">
 
                     <h5 class="fw-bold mb-3">Filtros Rápidos</h5>
 
                     <form method="GET" action="{{ url_for('tienda_T') }}">
-
                         <div class="mb-3">
                             <strong>Por Marca</strong><br>
 
                             {% for marca in ['Nike', 'Adidas', 'Puma', 'New Balance'] %}
                             <div class="form-check">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       name="marca"
-                                       value="{{ marca }}"
-                                       id="marca-{{ marca }}"
-                                       {% if marca in request.args.getlist('marca') %}checked{% endif %}>
+                                <input class="form-check-input" type="checkbox" name="marca" value="{{ marca }}"
+                                    id="marca-{{ marca }}" {% if marca in request.args.getlist('marca') %}checked{%
+                                    endif %}>
 
                                 <label class="form-check-label" for="marca-{{ marca }}">
                                     {{ marca }}
@@ -62,12 +52,9 @@
 
                             {% for condicion in ['Nuevo', 'Seminuevo'] %}
                             <div class="form-check">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       name="condicion"
-                                       value="{{ condicion }}"
-                                       id="condicion-{{ condicion }}"
-                                       {% if condicion in request.args.getlist('condicion') %}checked{% endif %}>
+                                <input class="form-check-input" type="checkbox" name="condicion" value="{{ condicion }}"
+                                    id="condicion-{{ condicion }}" {% if condicion in request.args.getlist('condicion')
+                                    %}checked{% endif %}>
 
                                 <label class="form-check-label" for="condicion-{{ condicion }}">
                                     {{ condicion }}
@@ -81,12 +68,9 @@
 
                             {% for color in ['Blanco', 'Negro', 'Gris', 'Rojo', 'Azul', 'Amarillo', 'Verde'] %}
                             <div class="form-check">
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       name="color"
-                                       value="{{ color }}"
-                                       id="color-{{ color }}"
-                                       {% if color in request.args.getlist('color') %}checked{% endif %}>
+                                <input class="form-check-input" type="checkbox" name="color" value="{{ color }}"
+                                    id="color-{{ color }}" {% if color in request.args.getlist('color') %}checked{%
+                                    endif %}>
 
                                 <label class="form-check-label" for="color-{{ color }}">
                                     {{ color }}
@@ -100,22 +84,14 @@
 
                             <div class="input-group input-group-sm mb-2">
                                 <span class="input-group-text">$</span>
-                                <input type="number"
-                                       class="form-control"
-                                       name="precio_min"
-                                       placeholder="Min"
-                                       value="{{ request.args.get('precio_min', '') }}"
-                                       min="0">
+                                <input type="number" class="form-control" name="precio_min" placeholder="Min"
+                                    value="{{ request.args.get('precio_min', '') }}" min="0">
                             </div>
 
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text">$</span>
-                                <input type="number"
-                                       class="form-control"
-                                       name="precio_max"
-                                       placeholder="Max"
-                                       value="{{ request.args.get('precio_max', '') }}"
-                                       min="0">
+                                <input type="number" class="form-control" name="precio_max" placeholder="Max"
+                                    value="{{ request.args.get('precio_max', '') }}" min="0">
                             </div>
                         </div>
 
@@ -123,20 +99,16 @@
                             Aplicar Filtros
                         </button>
 
-                        <a href="{{ url_for('tienda_T') }}"
-                           class="btn btn-outline-secondary w-100 mt-2">
+                        <a href="{{ url_for('tienda_T') }}" class="btn btn-outline-secondary w-100 mt-2">
                             Limpiar filtros
                         </a>
-
                     </form>
 
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- PRODUCTOS -->
     <div class="col-md-9 order-1 order-md-2">
         <div class="row g-3">
 
@@ -144,72 +116,65 @@
 
             <div class="col-12 col-sm-6 col-md-4">
 
-                <div class="card card-product shadow-sm h-100"
-                     data-bs-toggle="modal"
-                     data-bs-target="#modalProducto{{ producto._id }}">
+                <div class="card card-product shadow-sm h-100 position-relative {% if producto.stock <= 0 %}opacity-50{% endif %}"
+                    data-bs-toggle="modal" data-bs-target="#modalProducto{{ producto._id }}">
 
-                    <img src="{{ producto.imagen }}"
-                         class="card-img-top"
-                         height="230"
-                         alt="{{ producto.nombre }}"
-                         style="object-fit: cover;"
-                         onerror="this.src='https://placehold.co/600x400/png?text=Sin+imagen';">
+                    {% if producto.stock <= 0 %} <span class="badge bg-danger position-absolute top-0 start-0 m-2 fs-6">
+                        SOLD OUT
+                        </span>
+                        {% endif %}
 
-                    <div class="card-body">
+                        <img src="{{ producto.imagen }}" class="card-img-top" height="230" alt="{{ producto.nombre }}"
+                            style="object-fit: cover;"
+                            onerror="this.src='https://placehold.co/600x400/png?text=Sin+imagen';">
 
-                        <h6 class="card-title fw-bold">
-                            {{ producto.nombre }}
-                        </h6>
+                        <div class="card-body">
 
-                        <p class="text-success fw-bold mb-1">
-                            ${{ producto.precio }}
-                        </p>
+                            <h6 class="card-title fw-bold">
+                                {{ producto.nombre }}
+                            </h6>
 
-                        <p class="product-status mb-1">
-                            Estado: {{ producto.condicion }}
-                        </p>
+                            <p class="text-success fw-bold mb-1">
+                                ${{ producto.precio }}
+                            </p>
 
-                        <p class="text-muted mb-0">
-                            Unidades: {{ producto.stock }}
-                        </p>
+                            <p class="product-status mb-1">
+                                Estado: {{ producto.condicion }}
+                            </p>
 
-                    </div>
+                            {% if producto.stock <= 0 %} <p class="text-danger fw-bold mb-0">
+                                SOLD OUT
+                                </p>
+                                {% else %}
+                                <p class="text-muted mb-0">
+                                    Unidades: {{ producto.stock }}
+                                </p>
+                                {% endif %}
 
+                        </div>
                 </div>
-
             </div>
 
-            <!-- MODAL PRODUCTO -->
             <div class="modal fade" id="modalProducto{{ producto._id }}" tabindex="-1">
-
                 <div class="modal-dialog modal-lg modal-dialog-centered">
-
                     <div class="modal-content">
 
                         <div class="modal-header bg-light text-dark">
-
                             <h5 class="modal-title">
                                 {{ producto.nombre }}
                             </h5>
 
-                            <button type="button"
-                                    class="btn-close"
-                                    data-bs-dismiss="modal">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal">
                             </button>
-
                         </div>
 
                         <div class="modal-body">
-
                             <div class="row">
 
                                 <div class="col-md-6 mb-3 mb-md-0">
-
-                                    <img src="{{ producto.imagen }}"
-                                         class="img-fluid rounded"
-                                         alt="{{ producto.nombre }}"
-                                         onerror="this.src='https://placehold.co/600x400/png?text=Sin+imagen';">
-
+                                    <img src="{{ producto.imagen }}" class="img-fluid rounded"
+                                        alt="{{ producto.nombre }}"
+                                        onerror="this.src='https://placehold.co/600x400/png?text=Sin+imagen';">
                                 </div>
 
                                 <div class="col-md-6">
@@ -228,103 +193,116 @@
                                     <p><strong>Color:</strong> {{ producto.color }}</p>
                                     <p><strong>Talla:</strong> {{ producto.talla }}</p>
                                     <p><strong>Estado:</strong> {{ producto.condicion }}</p>
-                                    <p><strong>Unidades disponibles:</strong> {{ producto.stock }}</p>
+                                    <p>
+                                        <strong>Vendedor:</strong>
+                                        @{{ producto.username_vendedor }}
+                                    </p>
 
-                                    {% if producto.stock > 0 %}
+                                    {% if producto.telefono_vendedor %}
 
-                                    <form method="POST"
-                                          action="{{ url_for('agregar_carrito', producto_id=producto._id) }}"
-                                          class="mt-3"
-                                          onsubmit="this.querySelector('button[type=submit]').disabled=true;">
+                                    <a href="https://wa.me/52{{ producto.telefono_vendedor }}?text=Hola,%20me%20interesan%20los%20{{ producto.nombre | urlencode }}"
+                                        target="_blank" class="btn btn-success w-100 rounded-pill fw-bold mb-2">
+                                        Contactar vendedor por WhatsApp
+                                    </a>
 
-                                        <div class="row g-2">
-
-                                            <div class="col-6">
-                                                <label class="form-label small">Talla</label>
-                                                <input type="text"
-                                                       class="form-control"
-                                                       value="{{ producto.talla }}"
-                                                       readonly>
-                                                <input type="hidden"
-                                                       name="talla"
-                                                       value="{{ producto.talla }}">
-                                            </div>
-
-                                            <div class="col-4">
-                                                <label class="form-label small">Cantidad</label>
-
-                                                {% if producto.stock == 1 %}
-                                                <input type="number"
-                                                       name="cantidad"
-                                                       value="1"
-                                                       class="form-control"
-                                                       readonly>
-                                                {% else %}
-                                                <input type="number"
-                                                       name="cantidad"
-                                                       value="1"
-                                                       min="1"
-                                                       max="{{ producto.stock }}"
-                                                       class="form-control">
-                                                {% endif %}
-
-                                            </div>
-
-                                            <div class="col-2">
-                                                <label class="form-label small">&nbsp;</label>
-                                                <button type="submit" class="btn btn-success w-100">
-                                                    🛒
-                                                </button>
-                                            </div>
-
-                                        </div>
-
-                                    </form>
+                                    <p class="text-muted small text-center">
+                                        Tel: {{ producto.telefono_vendedor }}
+                                    </p>
 
                                     {% else %}
 
-                                    <div class="alert alert-warning mt-3">
-                                        Producto sin stock disponible.
+                                    <div class="alert alert-secondary mt-2">
+                                        Este vendedor no agregó teléfono de contacto.
                                     </div>
 
                                     {% endif %}
 
-                                    {% if session.get('usuario_id') == producto.id_vendedor %}
+                                    {% if producto.stock <= 0 %} <p class="text-danger fw-bold fs-5">
+                                        SOLD OUT
+                                        </p>
+                                        {% else %}
+                                        <p>
+                                            <strong>Unidades disponibles:</strong> {{ producto.stock }}
+                                        </p>
+                                        {% endif %}
 
-                                    <hr>
-
-                                    <div class="d-grid gap-2">
-
-                                        <a href="{{ url_for('editar_producto', producto_id=producto._id) }}"
-                                           class="btn btn-warning rounded-pill fw-bold">
-                                            Editar publicación
-                                        </a>
+                                        {% if producto.stock > 0 %}
 
                                         <form method="POST"
-                                              action="{{ url_for('eliminar_producto', producto_id=producto._id) }}"
-                                              onsubmit="return confirm('¿Seguro que quieres eliminar esta publicación?');">
+                                            action="{{ url_for('agregar_carrito', producto_id=producto._id) }}"
+                                            class="mt-3"
+                                            onsubmit="this.querySelector('button[type=submit]').disabled=true;">
 
-                                            <button type="submit"
-                                                    class="btn btn-danger w-100 rounded-pill fw-bold">
-                                                Eliminar publicación
-                                            </button>
+                                            <div class="row g-2">
 
+                                                <div class="col-6">
+                                                    <label class="form-label small">Talla</label>
+                                                    <input type="text" class="form-control" value="{{ producto.talla }}"
+                                                        readonly>
+                                                    <input type="hidden" name="talla" value="{{ producto.talla }}">
+                                                </div>
+
+                                                <div class="col-4">
+                                                    <label class="form-label small">Cantidad</label>
+
+                                                    {% if producto.stock == 1 %}
+                                                    <input type="number" name="cantidad" value="1" class="form-control"
+                                                        readonly>
+                                                    {% else %}
+                                                    <input type="number" name="cantidad" value="1" min="1"
+                                                        max="{{ producto.stock }}" class="form-control">
+                                                    {% endif %}
+                                                </div>
+
+                                                <div class="col-2">
+                                                    <label class="form-label small">&nbsp;</label>
+                                                    <button type="submit" class="btn btn-success w-100">
+                                                        🛒
+                                                    </button>
+                                                </div>
+
+                                            </div>
                                         </form>
 
-                                    </div>
+                                        {% else %}
 
-                                    {% endif %}
+                                        <div class="alert alert-warning mt-3">
+                                            Este producto ya se vendió.
+                                        </div>
+
+                                        {% endif %}
+
+                                        {% if session.get('usuario_id') == producto.id_vendedor %}
+
+                                        <hr>
+
+                                        <div class="d-grid gap-2">
+
+                                            <a href="{{ url_for('editar_producto', producto_id=producto._id) }}"
+                                                class="btn btn-warning rounded-pill fw-bold">
+                                                Editar publicación
+                                            </a>
+
+                                            <form method="POST"
+                                                action="{{ url_for('eliminar_producto', producto_id=producto._id) }}"
+                                                onsubmit="return confirm('¿Seguro que quieres eliminar esta publicación?');">
+
+                                                <button type="submit" class="btn btn-danger w-100 rounded-pill fw-bold">
+                                                    Eliminar publicación
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                        {% endif %}
 
                                 </div>
-
                             </div>
-
                         </div>
 
                     </div>
-
                 </div>
-
             </div>
 
             {% else %}
