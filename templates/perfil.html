@@ -5,39 +5,163 @@
 {% block content %}
 
 <div class="row justify-content-center">
+
     <div class="col-lg-8">
+
+        {% if usuario.solicitud_vendedor == "aprobada" and session.get('tipo') != "vendedor" %}
+
+        <div class="alert alert-success">
+            Tu solicitud fue aprobada. Cierra sesión y vuelve a entrar para activar las opciones de vendedor.
+        </div>
+
+        {% endif %}
+
         <div class="card shadow-sm p-4 mb-4">
+
             <div class="d-flex align-items-center mb-3">
-                <div class="profile-badge me-3" style="width: 56px; height: 56px; font-size: 1.4rem;">
+
+                <div class="profile-badge me-3" style="width: 70px; height: 70px; font-size: 1.6rem;">
                     {{ usuario.nombre[0] if usuario.nombre else 'U' }}
                 </div>
+
                 <div>
-                    <h3 class="mb-1">{{ usuario.nombre }}</h3>
-                    <p class="text-muted mb-0">{{ usuario.email }}</p>
+                    <h3 class="mb-1">
+                        {{ usuario.nombre }}
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        @{{ usuario.username if usuario.username else 'usuario' }}
+                    </p>
+
+                    <p class="text-muted mb-0">
+                        {{ usuario.email }}
+                    </p>
                 </div>
+
             </div>
 
             <div class="row g-3">
-                <div class="col-md-6">
-                    <div class="border rounded p-3 bg-white">
+
+                <div class="col-md-4">
+                    <div class="border rounded p-3 bg-white h-100">
                         <h6 class="mb-2">Tipo de usuario</h6>
-                        <p class="mb-0 text-muted">{{ usuario.tipo | capitalize }}</p>
+                        <p class="mb-0 text-muted">
+                            {{ usuario.tipo | capitalize }}
+                        </p>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="border rounded p-3 bg-white">
+
+                <div class="col-md-4">
+                    <div class="border rounded p-3 bg-white h-100">
                         <h6 class="mb-2">Estado</h6>
-                        <p class="mb-0 text-muted">Activo</p>
+                        <p class="mb-0 text-muted">
+                            Activo
+                        </p>
                     </div>
                 </div>
+
+                <div class="col-md-4">
+                    <div class="border rounded p-3 bg-white h-100">
+                        <h6 class="mb-2">Teléfono</h6>
+                        <p class="mb-0 text-muted">
+                            {{ usuario.telefono if usuario.telefono else 'Sin teléfono' }}
+                        </p>
+                    </div>
+                </div>
+
             </div>
 
             <div class="mt-4">
-                <a href="{{ url_for('editar_perfil') }}" class="btn btn-filter px-4">Editar perfil</a>
-                <a href="{{ url_for('acerca') }}" class="btn btn-outline-secondary ms-2">Acerca de</a>
+                <a href="{{ url_for('editar_perfil') }}" class="btn btn-filter px-4">
+                    Editar perfil
+                </a>
+
+                <a href="{{ url_for('acerca') }}" class="btn btn-outline-secondary ms-2">
+                    Acerca de
+                </a>
             </div>
+
         </div>
+
+        {% if usuario.tipo == "comprador" %}
+
+        <div class="card shadow-sm border-0 p-4 mb-4">
+
+            <h5 class="fw-bold">
+                ¿Quieres vender tus tenis?
+            </h5>
+
+            <p class="text-muted">
+                Para proteger la tienda, primero debes enviar una solicitud. Un administrador la revisará antes de
+                activarte como vendedor.
+            </p>
+
+            {% if usuario.solicitud_vendedor == "aprobada" %}
+
+            <div class="alert alert-success mb-0">
+                Tu solicitud fue aprobada. Cierra sesión y vuelve a entrar para activar las opciones de vendedor.
+            </div>
+
+            {% elif usuario.solicitud_vendedor == "pendiente" %}
+
+            <div class="alert alert-warning mb-0">
+                Tu solicitud está pendiente de aprobación.
+                <br>
+                <strong>Motivo enviado:</strong> {{ usuario.motivo_solicitud_vendedor }}
+            </div>
+
+            {% elif usuario.solicitud_vendedor == "rechazada" %}
+
+            <div class="alert alert-danger">
+                Tu solicitud fue rechazada. Puedes intentarlo de nuevo cambiando el motivo.
+            </div>
+
+            <form method="POST" action="{{ url_for('solicitar_vendedor') }}">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        Motivo de la solicitud
+                    </label>
+
+                    <textarea name="motivo_solicitud" class="form-control" rows="3"
+                        placeholder="Ej. Quiero vender tenis originales, tengo productos disponibles y puedo atender clientes..."
+                        required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success rounded-pill fw-bold">
+                    Enviar nueva solicitud
+                </button>
+
+            </form>
+
+            {% else %}
+
+            <form method="POST" action="{{ url_for('solicitar_vendedor') }}">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">
+                        Motivo de la solicitud
+                    </label>
+
+                    <textarea name="motivo_solicitud" class="form-control" rows="3"
+                        placeholder="Ej. Quiero vender tenis originales y tengo disponibilidad para atender compradores."
+                        required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success rounded-pill fw-bold">
+                    Enviar solicitud para vender
+                </button>
+
+            </form>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
     </div>
+
 </div>
 
 {% endblock %}

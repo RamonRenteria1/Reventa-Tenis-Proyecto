@@ -5,6 +5,7 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 from bson.objectid import ObjectId
 from datetime import datetime
+import re
 
 app = Flask(__name__)
 app.secret_key = "1029300192"
@@ -66,28 +67,34 @@ def registro():
 
         password_original = request.form["password"]
         confirmar_password = request.form["confirmar_password"]
-        tipo = request.form["tipo"]
+
+        tipo = "comprador"
 
         if password_original != confirmar_password:
             flash("Las contraseñas no coinciden", "danger")
             return redirect(url_for("registro"))
 
-        tipo = request.form["tipo"]
+        patron_password = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).+$"
+
+        if not re.match(patron_password, password_original):
+            flash("La contraseña debe tener al menos una mayúscula, una minúscula y un carácter especial", "warning")
+            return redirect(url_for("registro"))
 
         usuario_id = tienda.crear_usuario(
-        nombre,
-        email,
-    password_original,
-    tipo,
-    username,
-    foto_perfil,
-    telefono
-)
+            nombre,
+            email,
+            password_original,
+            tipo,
+            username,
+            foto_perfil,
+            telefono
+        )
+
         if not usuario_id:
             flash("El usuario ya existe", "danger")
             return redirect(url_for("registro"))
 
-        flash("Usuario registrado correctamente","success")
+        flash("Usuario registrado correctamente", "success")
         return redirect(url_for("login"))
 
     return render_template("registro.html")
@@ -725,5 +732,86 @@ def pedidos_vendedor():
         pedidos=pedidos_filtrados
     )
     
+@app.route("/solicitar_vendedor", methods=["POST"])
+def solicitar_vendedor():
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    usuario = tienda.obtener_usuario(session["usuario_id"])
+
+    if not usuario:
+        return redirect(url_for("login"))
+
+    if usuario.get("tipo") == "vendedor":
+        flash("Ya eres vendedor", "info")
+        return redirect(url_for("perfil"))
+
+    motivo = request.form.get("motivo_solicitud", "").strip()
+
+    if not motivo:
+        flash("Debes escribir un motivo para solicitar ser vendedor", "warning")
+        return redirect(url_for("perfil"))
+
+    tienda.usuarios.update_one(
+        {"_id": ObjectId(session["usuario_id"])},
+        {
+            "$set": {
+                "solicitud_vendedor": "pendiente",
+                "motivo_solicitud_vendedor": motivo,
+                "fecha_solicitud_vendedor": datetime.now()
+            }
+        }
+    )
+
+    flash("Solicitud enviada. Un administrador debe aprobarte.", "success")
+    return redirect(url_for("perfil"))
+
+@app.route("/aprobar_vendedor/<usuario_id>", methods=["POST"])
+def aprobar_vendedor(usuario_id):
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("tipo") != "admin":
+        flash("No tienes permiso", "danger")
+        return redirect(url_for("tienda_T"))
+
+    tienda.usuarios.update_one(
+        {"_id": ObjectId(usuario_id)},
+        {
+            "$set": {
+                "tipo": "vendedor",
+                "solicitud_vendedor": "aprobada"
+            }
+        }
+    )
+
+    flash("Solicitud aprobada. El usuario debe cerrar sesión y volver a entrar.", "success")
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/rechazar_vendedor/<usuario_id>", methods=["POST"])
+def rechazar_vendedor(usuario_id):
+
+    if "usuario_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("tipo") != "admin":
+        flash("No tienes permiso", "danger")
+        return redirect(url_for("tienda_T"))
+
+    tienda.usuarios.update_one(
+        {"_id": ObjectId(usuario_id)},
+        {
+            "$set": {
+                "solicitud_vendedor": "rechazada"
+            }
+        }
+    )
+
+    flash("Solicitud rechazada", "warning")
+    return redirect(url_for("admin_dashboard"))
+
 if __name__ == "__main__":
     app.run(debug=True)

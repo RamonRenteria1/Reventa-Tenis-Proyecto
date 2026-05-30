@@ -6,101 +6,50 @@
 
 <div class="container-fluid mt-4">
 
-    <!-- TITULO -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-
         <div>
-            <h2 class="fw-bold mb-0">
-                Dashboard Administrador
-            </h2>
-
-            <p class="text-muted">
-                Control general de la tienda
-            </p>
+            <h2 class="fw-bold mb-0">Dashboard Administrador</h2>
+            <p class="text-muted mb-0">Control general de la tienda</p>
         </div>
 
-        <div>
-            <span class="badge bg-danger fs-6 px-3 py-2">
-                ADMIN
-            </span>
-        </div>
-
+        <span class="badge bg-danger fs-6 px-3 py-2">ADMIN</span>
     </div>
 
-    <!-- TARJETAS -->
     <div class="row g-3 mb-4">
 
         <div class="col-md-4">
-
             <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
-
                 <div class="card-body">
-
-                    <h6 class="text-muted">
-                        Usuarios registrados
-                    </h6>
-
-                    <h2 class="fw-bold">
-                        {{ total_usuarios }}
-                    </h2>
-
+                    <h6 class="text-muted">Usuarios registrados</h6>
+                    <h2 class="fw-bold">{{ total_usuarios }}</h2>
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-4">
-
             <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
-
                 <div class="card-body">
-
-                    <h6 class="text-muted">
-                        Productos activos
-                    </h6>
-
-                    <h2 class="fw-bold">
-                        {{ total_productos }}
-                    </h2>
-
+                    <h6 class="text-muted">Productos activos</h6>
+                    <h2 class="fw-bold">{{ total_productos }}</h2>
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-4">
-
             <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
-
                 <div class="card-body">
-
-                    <h6 class="text-muted">
-                        Carritos creados
-                    </h6>
-
-                    <h2 class="fw-bold">
-                        {{ total_carritos }}
-                    </h2>
-
+                    <h6 class="text-muted">Carritos con productos</h6>
+                    <h2 class="fw-bold">{{ total_carritos }}</h2>
                 </div>
-
             </div>
-
         </div>
 
     </div>
 
-    <!-- USUARIOS -->
     <div class="card shadow-sm border-0 mb-4">
 
         <div class="card-header bg-dark text-white">
-
-            <h5 class="mb-0">
-                Usuarios Registrados
-            </h5>
-
+            <h5 class="mb-0">Usuarios registrados</h5>
         </div>
 
         <div class="card-body table-responsive">
@@ -108,14 +57,16 @@
             <table class="table table-hover align-middle">
 
                 <thead>
-
                     <tr>
-                        <th>Nombre</th>
+                        <th>Usuario</th>
                         <th>Correo</th>
+                        <th>Teléfono</th>
                         <th>Tipo</th>
                         <th>Estado</th>
+                        <th>Solicitud vendedor</th>
+                        <th>Motivo</th>
+                        <th>Acción</th>
                     </tr>
-
                 </thead>
 
                 <tbody>
@@ -124,46 +75,88 @@
 
                     <tr>
 
-                        <td class="fw-semibold">
-                            {{ usuario.nombre }}
+                        <td>
+                            <div>
+                                <strong>{{ usuario.nombre }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    @{{ usuario.username if usuario.username else 'usuario' }}
+                                </small>
+                            </div>
+                        </td>
+
+                        <td>{{ usuario.email }}</td>
+
+                        <td>
+                            {{ usuario.telefono if usuario.telefono else 'Sin teléfono' }}
                         </td>
 
                         <td>
-                            {{ usuario.email }}
-                        </td>
-
-                        <td>
-
                             {% if usuario.tipo == "admin" %}
-                            <span class="badge bg-danger">
-                                Admin
-                            </span>
-
+                            <span class="badge bg-danger">Admin</span>
                             {% elif usuario.tipo == "vendedor" %}
-                            <span class="badge bg-primary">
-                                Vendedor
-                            </span>
-
+                            <span class="badge bg-primary">Vendedor</span>
                             {% else %}
-                            <span class="badge bg-secondary">
-                                Comprador
-                            </span>
+                            <span class="badge bg-secondary">Comprador</span>
                             {% endif %}
-
                         </td>
 
                         <td>
-
                             {% if usuario.activo %}
-                            <span class="badge bg-success">
-                                Activo
-                            </span>
+                            <span class="badge bg-success">Activo</span>
                             {% else %}
-                            <span class="badge bg-danger">
-                                Inactivo
-                            </span>
+                            <span class="badge bg-danger">Inactivo</span>
                             {% endif %}
+                        </td>
 
+                        <td>
+                            {% if usuario.solicitud_vendedor == "pendiente" %}
+                            <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% elif usuario.solicitud_vendedor == "aprobada" %}
+                            <span class="badge bg-success">Aprobada</span>
+                            {% elif usuario.solicitud_vendedor == "rechazada" %}
+                            <span class="badge bg-danger">Rechazada</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Sin solicitud</span>
+                            {% endif %}
+                        </td>
+
+                        <td style="max-width: 280px;">
+                            {% if usuario.motivo_solicitud_vendedor %}
+                            <small>{{ usuario.motivo_solicitud_vendedor }}</small>
+                            {% else %}
+                            <span class="text-muted small">Sin motivo</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if usuario.solicitud_vendedor == "pendiente" %}
+
+                            <div class="d-flex gap-2 flex-wrap">
+
+                                <form method="POST"
+                                      action="{{ url_for('aprobar_vendedor', usuario_id=usuario._id) }}">
+
+                                    <button class="btn btn-success btn-sm rounded-pill">
+                                        Aprobar
+                                    </button>
+
+                                </form>
+
+                                <form method="POST"
+                                      action="{{ url_for('rechazar_vendedor', usuario_id=usuario._id) }}">
+
+                                    <button class="btn btn-danger btn-sm rounded-pill">
+                                        Rechazar
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                            {% else %}
+                            <span class="text-muted small">Sin acción</span>
+                            {% endif %}
                         </td>
 
                     </tr>
@@ -178,15 +171,10 @@
 
     </div>
 
-    <!-- PRODUCTOS -->
     <div class="card shadow-sm border-0">
 
         <div class="card-header bg-dark text-white">
-
-            <h5 class="mb-0">
-                Productos Publicados
-            </h5>
-
+            <h5 class="mb-0">Productos publicados</h5>
         </div>
 
         <div class="card-body table-responsive">
@@ -194,7 +182,6 @@
             <table class="table table-hover align-middle">
 
                 <thead>
-
                     <tr>
                         <th>Imagen</th>
                         <th>Producto</th>
@@ -203,7 +190,6 @@
                         <th>Stock</th>
                         <th>Estado</th>
                     </tr>
-
                 </thead>
 
                 <tbody>
@@ -213,44 +199,36 @@
                     <tr>
 
                         <td>
-
                             <img src="{{ producto.imagen }}"
                                  width="70"
                                  height="70"
-                                 class="rounded object-fit-cover"
+                                 class="rounded"
                                  style="object-fit: cover;"
                                  onerror="this.src='https://placehold.co/70x70/png?text=IMG';">
-
                         </td>
 
-                        <td class="fw-semibold">
-                            {{ producto.nombre }}
-                        </td>
+                        <td class="fw-semibold">{{ producto.nombre }}</td>
 
-                        <td>
-                            {{ producto.marca }}
-                        </td>
+                        <td>{{ producto.marca }}</td>
 
                         <td class="text-success fw-bold">
                             ${{ producto.precio }}
                         </td>
 
                         <td>
+                            {% if producto.stock <= 0 %}
+                            <span class="badge bg-danger">SOLD OUT</span>
+                            {% else %}
                             {{ producto.stock }}
+                            {% endif %}
                         </td>
 
                         <td>
-
                             {% if producto.activo %}
-                            <span class="badge bg-success">
-                                Activo
-                            </span>
+                            <span class="badge bg-success">Activo</span>
                             {% else %}
-                            <span class="badge bg-danger">
-                                Eliminado
-                            </span>
+                            <span class="badge bg-danger">Eliminado</span>
                             {% endif %}
-
                         </td>
 
                     </tr>

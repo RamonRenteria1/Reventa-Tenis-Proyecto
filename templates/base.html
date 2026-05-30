@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="icon" href="{{ url_for('static', filename='img/icon.png') }}">
 
-    
+
 </head>
 
 <body>
@@ -108,6 +108,22 @@
                             </li>
 
                             {% endif %}
+
+                            {% if session.get('tipo') == 'comprador' %}
+
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('perfil') }}">
+                                    Quiero vender
+                                </a>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            {% endif %}
+
+                            
 
                             <li>
                                 <a class="dropdown-item" href="{{ url_for('mis_pedidos') }}">
